@@ -17,6 +17,52 @@ app.secret_key = "ABC"
 # So that undefined variables in Jinja2 will strike an error vs. failing silently
 app.jinja_env.undefined = StrictUndefined
 
+
+@approute("/")
+pass
+
+#homepage
+
+
+@app.route("/register")
+pass
+
+#GET - SHOW FORM
+#POST - PROCESS FORM
+
+
+@app.route("/login")
+pass
+
+#GET - SHOW FORM
+#POST - CHECK LOGIN
+# if ok, add user to session
+
+
+@app.route("/logout")
+pass
+
+#GET
+#redirect back to homepage
+#delete user from session
+
+
+@app.route("/user")
+pass
+
+#GET - SHOW PROFILE
+# URL should be /users/<username>
+# implied that /users should be a page in itself?
+
+
+@app.route("/<username>/home")
+
+#LOGGED IN userpage with grocery list / recipe search bar
+#"Dashboard" of user
+#Or should I not do this and render '/' instead?
+
+pass
+
 if __name__ == "__main__":
     # We have to set debug=True here, since it has to be True at the point
     # that we invoke the DebugToolbarExtension
