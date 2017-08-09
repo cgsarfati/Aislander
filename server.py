@@ -7,7 +7,7 @@ from jinja2 import StrictUndefined
 from flask import Flask, render_template, request, flash, redirect, session
 from flask_debugtoolbar import DebugToolbarExtension
 
-# Import model.py table definitions 
+# Import model.py table definitions
 from model import connect_to_db, db, User, Recipe, Ingredient
 from model import List, CategoryRecipe, CategoryIngredient, RecipeIngredient
 from model import ListIngredient, Bookmark, RecipeCategory
@@ -27,6 +27,8 @@ def index():
 
     return render_template("homepage.html")
 
+
+#################### REGISTRATION ####################
 
 @app.route("/register")
 def display_registration_form():
@@ -59,6 +61,8 @@ def process_registration_form():
     return redirect("/")
 
 
+#################### LOGIN/LOGOUT ####################
+
 @app.route("/login")
 def display_login_form():
     """ Display login form. """
@@ -71,29 +75,38 @@ def validate_login_info():
     """ Attempt to log the user in by crossmatching with database. """
 
     # Get form data back from login_form.html
-    username = request.form["email"]
+    username = request.form["username"]
     password = request.form["password"]
 
-    #Crossmatch info with database
+    # Check if user in database
+    # Use .first() --> gives back user object if exists. Nonetype if not.
+    user = User.query.filter(User.username == username).first()
 
-    all_users = User.query.filter(User.username == username).all()
+    # Error messages
+    if not user:
+        flash("{} does not exist!".format(username))
+        return redirect("/login")
+    if user.password != password:
+        flash("Incorrect password")
+        return redirect("/login")
 
-    if 
-
-
-
-
-# #POST - CHECK LOGIN
-# # if ok, add user to session
-
-
-# @app.route("/logout")
-
-# #GET
-# #redirect back to homepage
-# #delete user from session
+    # If successful, add user to session (use PK) and go back to homepage.
+    session["user_id"] = user.user_id
+    flash("{} has successfully logged in.".format(user.username))
+    return redirect("/")
 
 
+@app.route("/logout")
+def logout_user():
+    """ Log out user. """
+
+    # Remove user from session (remember session info is user's PK not username!)
+    del session["user_id"]
+    flash("You have logged out.")
+    return redirect("/")
+
+
+#################### USER PROFILE ####################
 # @app.route("/user")
 
 # #GET - SHOW PROFILE
