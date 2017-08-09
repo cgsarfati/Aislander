@@ -90,8 +90,9 @@ def validate_login_info():
         flash("Incorrect password")
         return redirect("/login")
 
-    # If successful, add user to session (use PK) and go back to homepage.
+    # If successful, add user to session and go back to homepage.
     session["user_id"] = user.user_id
+    session["username"] = user.username
     flash("{} has successfully logged in.".format(user.username))
     return redirect("/")
 
@@ -102,12 +103,21 @@ def logout_user():
 
     # Remove user from session (remember session info is user's PK not username!)
     del session["user_id"]
+    del session["username"]
     flash("You have logged out.")
     return redirect("/")
 
 
 #################### USER PROFILE ####################
-# @app.route("/user")
+@app.route("/user/<username>")
+def display_profile(username):
+    """ Show user profile. """
+
+    # Access user info from session first, then refer to DB for rest of info
+    username = session.get("username")
+    user = User.query.filter(User.username == username).first()
+
+    return render_template("user_profile.html", username=user.username, email=user.email)
 
 # #GET - SHOW PROFILE
 # # URL should be /users/<username>
