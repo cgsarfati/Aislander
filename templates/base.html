@@ -1,0 +1,32 @@
+<!doctype html>
+<html>
+<head>
+    <title> {% block title %} TITLE GOES HERE {% endblock %} </title>
+</head>
+<body>
+
+<!-- NAVIGATION BAR -->
+Grocery List Nav Bar
+
+<!-- LOGIN/LOGOUT-->
+{% if "user_id" in session %}
+    <a href="/logout">Logout</a>
+{% else %}
+    <a href="/login">Login</a>
+    <a href="/register">Register</a>
+{% endif %}
+
+<!-- FLASH MESSAGE -->
+{% for flash in get_flashed_messages() %}
+  {{ flash }}
+{% endfor %}
+
+<!-- CONTENT -->
+<hr>
+
+{% block content %}
+    CONTENT GOES HERE
+{% endblock %}
+
+</body>
+</html>
