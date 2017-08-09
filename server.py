@@ -1,10 +1,12 @@
 """ Grocery List App. """
 
+from functools import wraps
+
 # Import web templating language
 from jinja2 import StrictUndefined
 
 # Import Flask web framework
-from flask import Flask, render_template, request, flash, redirect, session
+from flask import Flask, render_template, request, flash, redirect, session, g, url_for
 from flask_debugtoolbar import DebugToolbarExtension
 
 # Import model.py table definitions
@@ -20,6 +22,42 @@ app.secret_key = "ABC"
 # So that undefined variables in Jinja2 will strike an error vs. failing silently
 app.jinja_env.undefined = StrictUndefined
 
+
+#################### GLOBAL FUNCTIONS ####################
+
+@app.before_request
+def pre_process_all_requests():
+    """ Setup the request context. Current user can now be accessed globally. """
+
+    # Get user info from session
+    user_id = session.get('user_id')
+
+    # If exists, use it to grab user's info from DB. Save to g.current_user
+    if user_id:
+        g.current_user = User.query.get(user_id)
+        # Use g.logged_in status for future conditionals in app routes
+        g.logged_in = True
+    else:
+        g.logged_in = False
+        g.current_user = None
+
+
+def login_required(f):
+    """ Redirects user to login page if trying to access a page that
+    requires a logged in user."""
+
+    # Wraps gives ability to use @login_required under each app route
+    # that needs a logged in user
+    @wraps(f)
+    def decorated_function(*args, **kwargs):
+        if g.current_user is None:
+            # Get url that corresponds to login_form html
+            return redirect(url_for('login_form', next=request.url))
+        return f(*args, **kwargs)
+    return decorated_function
+
+
+#################### HOMEPAGE ####################
 
 @app.route("/")
 def index():
@@ -92,7 +130,6 @@ def validate_login_info():
 
     # If successful, add user to session and go back to homepage.
     session["user_id"] = user.user_id
-    session["username"] = user.username
     flash("{} has successfully logged in.".format(user.username))
     return redirect("/")
 
@@ -103,25 +140,20 @@ def logout_user():
 
     # Remove user from session (remember session info is user's PK not username!)
     del session["user_id"]
-    del session["username"]
     flash("You have logged out.")
     return redirect("/")
 
 
 #################### USER PROFILE ####################
-@app.route("/user/<username>")
+@app.route("/users/<username>")
 def display_profile(username):
-    """ Show user profile. """
+    """ Show user profile."""
 
-    # Access user info from session first, then refer to DB for rest of info
-    username = session.get("username")
+    # Input of <username> is now the parameter for this function.
+    # Crossmatch with DB to find that particular user's info. Returns object.
     user = User.query.filter(User.username == username).first()
 
     return render_template("user_profile.html", username=user.username, email=user.email)
-
-# #GET - SHOW PROFILE
-# # URL should be /users/<username>
-# # implied that /users should be a page in itself?
 
 
 # @app.route("/<username>/home")
