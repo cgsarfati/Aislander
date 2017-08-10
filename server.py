@@ -27,7 +27,7 @@ app.jinja_env.undefined = StrictUndefined
 
 @app.before_request
 def pre_process_all_requests():
-    """ Setup the request context. Current user can now be accessed globally. """
+    """ Setup the request context. Current user info can now be accessed globally. """
 
     # Get user info from session
     user_id = session.get('user_id')
@@ -42,6 +42,7 @@ def pre_process_all_requests():
         g.current_user = None
 
 
+# custom decorator
 def login_required(f):
     """ Redirects user to login page if trying to access a page that
     requires a logged in user."""
@@ -131,7 +132,7 @@ def validate_login_info():
     # If successful, add user to session and go back to homepage.
     session["user_id"] = user.user_id
     flash("{} has successfully logged in.".format(user.username))
-    return redirect("/")
+    return redirect("/dashboard")
 
 
 @app.route("/logout")
@@ -145,6 +146,7 @@ def logout_user():
 
 
 #################### USER PROFILE ####################
+
 @app.route("/users/<username>")
 def display_profile(username):
     """ Show user profile."""
@@ -156,12 +158,29 @@ def display_profile(username):
     return render_template("user_profile.html", username=user.username, email=user.email)
 
 
-# @app.route("/<username>/home")
+@app.route("/dashboard")
+@login_required
+def display_searchbox_and_list():
+    """ Displays dashboard with recipe search + empty grocery list. """
 
-# #LOGGED IN userpage with grocery list / recipe search bar
-# FLASH MESSAGE login success
-# #"Dashboard" of user
-# #Or should I not do this and render '/' instead?
+    return render_template("dashboard.html")
+
+
+@app.route("/dashboard")
+@login_required
+def process_recipe_search():
+    """ Processes recipe search with Recipe API feature. """
+
+    # Store user's recipe search input into var
+    recipe_search = request.form["recipe_search"]
+
+    # Put that into Recipe API's search query feature
+
+    # R
+
+#NOTES:
+# Use sessions to store search info when navigating b/w pages
+# Only save data in DB once user clicks "save" for final grocery list or everytime they append recipe?
 
 if __name__ == "__main__":
     # We have to set debug=True here, since it has to be True at the point
