@@ -198,7 +198,6 @@ def process_recipe_search():
     results = jsonify(response.json())
     return results
 
-
 #NOTES:
 # Use sessions to store search info when navigating b/w pages
 # Only save data in DB once user clicks "save" for final grocery list or everytime they append recipe?

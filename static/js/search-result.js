@@ -1,12 +1,14 @@
 function displaySearchResults(results) {
 
-    // gest result key from json object, returns list
+    // get result key from json object, returns list
     var searchResults = results['results'];
 
     // unpack json into readable format and insert into dashboard.html
     for (var i = 0; i < searchResults.length; i++) {
-        $('#recipe-title').html(searchResults[i]['title']);
-        $('#recipe-pic').attr("src", searchResults[i]['image']);
+        var img_url = results['baseUri'] + searchResults[i]['image'];
+        var title = searchResults[i]['title'] + "<br>";
+        var img = "<img src=" + img_url + ">" + "<br>";
+        $('#recipe-title-img').append(title + img);
     }
 }
 
