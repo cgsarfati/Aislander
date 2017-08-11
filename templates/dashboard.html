@@ -1,0 +1,25 @@
+{% extends 'base.html' %}
+
+{% block title %} Dashboard {% endblock %}
+
+{% block content %}
+
+<h2> Dashboard </h2>
+
+RECIPE SEARCH BAR + GROCERY LIST FEATURE <br> <br> <br>
+
+<!-- RECIPE SEARCH FORM -->
+<form action="/dashboard.json" id="search-result">
+  Search recipe: <input type="text" id="recipe-search"><br>
+  <input type="submit" value="submit">
+</form> 
+
+<!-- RECIPE SEARCH RESULTS -->
+<div id="recipe">
+  <div id="recipe-title"> </div>
+  <img src="" id="recipe-pic">
+</div>
+
+<script src="/static/js/search-result.js" type="text/javascript"></script>
+
+{% endblock %}
