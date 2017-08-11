@@ -1,12 +1,19 @@
 """ Grocery List App. """
 
+# For using custom decorators
 from functools import wraps
+
+# Library for easy API calls
+import requests
+
+# To Access OS environmental variables
+import os
 
 # Import web templating language
 from jinja2 import StrictUndefined
 
 # Import Flask web framework
-from flask import Flask, render_template, request, flash, redirect, session, g, url_for
+from flask import Flask, render_template, request, flash, redirect, session, g, url_for, jsonify
 from flask_debugtoolbar import DebugToolbarExtension
 
 # Import model.py table definitions
@@ -56,6 +63,11 @@ def login_required(f):
             return redirect(url_for('login_form', next=request.url))
         return f(*args, **kwargs)
     return decorated_function
+
+
+# use API key
+headers = {"X-Mashape-Key": os.environ['RECIPE_CONSUMER_KEY'],
+           "Accept": "application/json"}
 
 
 #################### HOMEPAGE ####################
@@ -158,6 +170,8 @@ def display_profile(username):
     return render_template("user_profile.html", username=user.username, email=user.email)
 
 
+#################### DASHBOARD (RECIPE SEARCH/GROCERY LIST) ####################
+
 @app.route("/dashboard")
 @login_required
 def display_searchbox_and_list():
@@ -166,17 +180,24 @@ def display_searchbox_and_list():
     return render_template("dashboard.html")
 
 
-@app.route("/dashboard")
+@app.route("/dashboard.json")
 @login_required
 def process_recipe_search():
-    """ Processes recipe search with Recipe API feature. """
+    """ Processes recipe search with Spoonacular API feature. """
 
-    # Store user's recipe search input into var
-    recipe_search = request.form["recipe_search"]
+    # Store user's recipe search input into var, put into payload for API call
+    # recipe_search is key from formInputs
+    recipe_search = request.args["recipe_search"]
 
-    # Put that into Recipe API's search query feature
+    # Set up parameters for API call, then call API
+    payload = {'query': recipe_search, 'number': 5}
+    response = requests.get('https://spoonacular-recipe-food-nutrition-v1.p.mashape.com/recipes/search',
+                            params=payload, headers=headers)
 
-    # R
+    # Store json response
+    results = jsonify(response.json())
+    return results
+
 
 #NOTES:
 # Use sessions to store search info when navigating b/w pages
