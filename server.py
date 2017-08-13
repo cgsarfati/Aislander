@@ -183,10 +183,9 @@ def display_searchbox_and_list():
 @app.route("/dashboard.json")
 @login_required
 def process_recipe_search():
-    """ Processes recipe search with Spoonacular API feature. """
+    """ Processes recipe search with Spoonacular API. """
 
-    # Store user's recipe search input into var, put into payload for API call
-    # recipe_search is key from formInputs
+    # Unpack formInputs (recipe_search is the key)
     recipe_search = request.args["recipe_search"]
 
     # Set up parameters for API call, then call API
@@ -194,13 +193,34 @@ def process_recipe_search():
     response = requests.get('https://spoonacular-recipe-food-nutrition-v1.p.mashape.com/recipes/search',
                             params=payload, headers=headers)
 
-    # Store json response
-    results = jsonify(response.json())
-    return results
+    # Store recipe info as json
+    results_json = response.json()
 
-#NOTES:
-# Use sessions to store search info when navigating b/w pages
-# Only save data in DB once user clicks "save" for final grocery list or everytime they append recipe?
+    # Convert json into transferrable format
+    return jsonify(results_json)
+
+
+@app.route("/recipe-summaries.json")
+@login_required
+def display_recipe_summaries():
+    """ Displays recipe summaries along with recipe name and image. """
+
+    # Unpack recipe ids (now a list of integers)
+    recipe_ids = request.args["recipe_id"]
+
+    # Store jsons into list
+    summaries_json = []
+
+    # Loop through each id to be used in API call
+    for recipe_id in recipe_ids:
+        payload = {'id': recipe_id}
+        response = requests.get('https://spoonacular-recipe-food-nutrition-v1.p.mashape.com/recipes/extract',
+                                params=payload, headers=headers)
+        summary_json = response.json()
+        summaries_json.append(summary_json)
+
+    # Send back json-ified list of jsons back to .js
+
 
 if __name__ == "__main__":
     # We have to set debug=True here, since it has to be True at the point
