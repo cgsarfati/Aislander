@@ -180,7 +180,7 @@ def display_searchbox_and_list():
     return render_template("dashboard.html")
 
 
-@app.route("/dashboard.json")
+@app.route("/search.json")
 @login_required
 def process_recipe_search():
     """ Processes recipe search with Spoonacular API. """
@@ -213,6 +213,18 @@ def process_recipe_search():
     return jsonify(results_json)
 
 
+@app.route("/bookmark.json", METHODS=["POST"])
+@login_required
+def process_recipe_bookmark(recipe_id):
+    """ Adds recipe to be bookmarked into DB. """
+
+    # Unpacks info from .js
+    # Adds info to DB
+    # Return something
+
+
+#################### DETAILED RECIPE INFO ####################
+
 @app.route("/recipe-info/<recipe_id>")
 @login_required
 def display_recipe_info(recipe_id):
@@ -222,13 +234,14 @@ def display_recipe_info(recipe_id):
     info_response = requests.get('https://spoonacular-recipe-food-nutrition-v1.p.mashape.com/recipes/' + recipe_id + '/information',
                                  headers=headers)
 
-    # Store into json format, then unpack
+    # Store into json format
     recipe_info_json = info_response.json()
 
+    # Unpack json
     title = recipe_info_json['title']
-    cuisines = recipe_info_json['cuisines']  # unpack in jinja
+    cuisines = recipe_info_json['cuisines']  # list
     img = recipe_info_json['image']
-    ingredients = recipe_info_json['extendedIngredients']  # unpack in jinja
+    ingredients = recipe_info_json['extendedIngredients']  # list
     cooking_instructions = recipe_info_json['instructions']
 
     return render_template("recipe_info.html", title=title, cuisines=cuisines,

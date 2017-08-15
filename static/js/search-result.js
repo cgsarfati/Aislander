@@ -6,13 +6,26 @@ function displaySearchResults(results) {
     // unpack json
     for (var i = 0; i < searchResults.length; i++) {
 
-        // format info, insert into html
-        var img_url = results['baseUri'] + searchResults[i]['image'];
-        var img = "<img src=" + img_url + ">" + "<br>";
-        var title = "<a href='/recipe-info/" + String(searchResults[i]['id']) + "'>" + searchResults[i]['title'] + "</a>" + "<br>";
+        // format info into elements
+
+        var beginDiv = "<div class='recipe'>";
+        var endDiv = "</div>";
+
+        var imgUrl = results['baseUri'] + searchResults[i]['image'];
+        var img = "<img src=" + imgUrl + ">" + "<br>";
+
+        var recipeId = String(searchResults[i]['id']);
+
+        var title = "<a href='/recipe-info/" + recipeId + "'>" +
+                     searchResults[i]['title'] + "</a>";
+
         var summary = searchResults[i]['summary'] + "<br>";
 
-        $('#recipe').append(title + img + summary);
+        var bookmarkButton = "<button type='button' class='favorite' data-recipe-id='" + recipeId + "'>Bookmark</button>";
+        var addButton = "<button type='button' class='addRecipe' data-recipe-id='" + recipeId + "'>Add Recipe</button> </br>";
+        
+        // add all elements together, enclosed in individual divs
+        $('.recipes').append(beginDiv + title + bookmarkButton + addButton + img + summary + endDiv);
     }
 
 }
@@ -26,7 +39,7 @@ function handleSearchResults(evt) {
     };
 
     // send form to server, then perform success function
-    $.get("/dashboard.json", formInputs, displaySearchResults);
+    $.get("/search.json", formInputs, displaySearchResults);
 }
 
 // event listener for recipe search box in dashboard.html
