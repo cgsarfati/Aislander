@@ -231,18 +231,9 @@ def display_recipe_info(recipe_id):
     ingredients = recipe_info_json['extendedIngredients']  # unpack in jinja
     cooking_instructions = recipe_info_json['instructions']
 
-    # Call recipe summary API feature (no payload required)
-    summary_response = requests.get('https://spoonacular-recipe-food-nutrition-v1.p.mashape.com/recipes/' + recipe_id + '/summary',
-                                    headers=headers)
-
-    # Store into json format, get summary info
-    recipe_summary = summary_response.json()
-    summary = recipe_summary['summary']
-
     return render_template("recipe_info.html", title=title, cuisines=cuisines,
                            img=img, ingredients=ingredients,
-                           cooking_instructions=cooking_instructions, summary=
-                           summary)
+                           cooking_instructions=cooking_instructions)
 
 
 if __name__ == "__main__":
