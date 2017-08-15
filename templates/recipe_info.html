@@ -9,14 +9,16 @@
   Cuisine:
   {% for cuisine in cuisines %}
     {{ cuisine }} <br>
-  {% endfor %} </br>
+  {% endfor %} <br>
+
+  Summary: {{ summary }} <br>
 
   <img src={{ img }}> <br>
 
   Ingredients: <br>
   {% for ingredient in ingredients %}
     {{ ingredient['originalString'] }} <br>
-  {% endfor %} </br>
+  {% endfor %} <br>
 
   Cooking instructions: {{ cooking_instructions }} <br> <br>
 

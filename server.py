@@ -196,7 +196,20 @@ def process_recipe_search():
     # Store recipe info as json
     results_json = response.json()
 
-    # Convert json into transferrable format
+    # Append "summary" key from another json to results_json
+    for recipe in results_json['results']:
+        recipe_id = str(recipe['id'])
+        summary_response = requests.get('https://spoonacular-recipe-food-nutrition-v1.p.mashape.com/recipes/' + recipe_id + '/summary',
+                                        headers=headers)
+
+        # Store as json and get summary key
+        summary_json = summary_response.json()
+        summary_text = summary_json['summary']
+
+        # Create new summary key to original json
+        recipe['summary'] = summary_text
+
+    # Send json to search-result.js AJAX success function
     return jsonify(results_json)
 
 
@@ -205,12 +218,12 @@ def process_recipe_search():
 def display_recipe_info(recipe_id):
     """ Display detailed recipe info upon clicking on link. """
 
-    # Call recipe info API feature (this doesn't have a payload)
-    response = requests.get('https://spoonacular-recipe-food-nutrition-v1.p.mashape.com/recipes/' + recipe_id + '/information',
-                            headers=headers)
+    # Call recipe info API feature (no payload required)
+    info_response = requests.get('https://spoonacular-recipe-food-nutrition-v1.p.mashape.com/recipes/' + recipe_id + '/information',
+                                 headers=headers)
 
     # Store into json format, then unpack
-    recipe_info_json = response.json()
+    recipe_info_json = info_response.json()
 
     title = recipe_info_json['title']
     cuisines = recipe_info_json['cuisines']  # unpack in jinja
@@ -218,9 +231,18 @@ def display_recipe_info(recipe_id):
     ingredients = recipe_info_json['extendedIngredients']  # unpack in jinja
     cooking_instructions = recipe_info_json['instructions']
 
+    # Call recipe summary API feature (no payload required)
+    summary_response = requests.get('https://spoonacular-recipe-food-nutrition-v1.p.mashape.com/recipes/' + recipe_id + '/summary',
+                                    headers=headers)
+
+    # Store into json format, get summary info
+    recipe_summary = summary_response.json()
+    summary = recipe_summary['summary']
+
     return render_template("recipe_info.html", title=title, cuisines=cuisines,
                            img=img, ingredients=ingredients,
-                           cooking_instructions=cooking_instructions)
+                           cooking_instructions=cooking_instructions, summary=
+                           summary)
 
 
 if __name__ == "__main__":

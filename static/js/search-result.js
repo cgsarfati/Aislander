@@ -10,9 +10,9 @@ function displaySearchResults(results) {
         var img_url = results['baseUri'] + searchResults[i]['image'];
         var img = "<img src=" + img_url + ">" + "<br>";
         var title = "<a href='/recipe-info/" + String(searchResults[i]['id']) + "'>" + searchResults[i]['title'] + "</a>" + "<br>";
-        console.log(title);
+        var summary = searchResults[i]['summary'] + "<br>";
 
-        $('#recipe-title-img').append(title + img);
+        $('#recipe').append(title + img + summary);
     }
 
 }
