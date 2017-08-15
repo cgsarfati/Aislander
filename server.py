@@ -200,26 +200,27 @@ def process_recipe_search():
     return jsonify(results_json)
 
 
-@app.route("/recipe-summaries.json")
+@app.route("/recipe-info/<recipe_id>")
 @login_required
-def display_recipe_summaries():
-    """ Displays recipe summaries along with recipe name and image. """
+def display_recipe_info(recipe_id):
+    """ Display detailed recipe info upon clicking on link. """
 
-    # Unpack recipe ids (now a list of integers)
-    recipe_ids = request.args["recipe_id"]
+    # Call recipe info API feature (this doesn't have a payload)
+    response = requests.get('https://spoonacular-recipe-food-nutrition-v1.p.mashape.com/recipes/' + recipe_id + '/information',
+                            headers=headers)
 
-    # Store jsons into list
-    summaries_json = []
+    # Store into json format, then unpack
+    recipe_info_json = response.json()
 
-    # Loop through each id to be used in API call
-    for recipe_id in recipe_ids:
-        payload = {'id': recipe_id}
-        response = requests.get('https://spoonacular-recipe-food-nutrition-v1.p.mashape.com/recipes/extract',
-                                params=payload, headers=headers)
-        summary_json = response.json()
-        summaries_json.append(summary_json)
+    title = recipe_info_json['title']
+    cuisines = recipe_info_json['cuisines']  # unpack in jinja
+    img = recipe_info_json['image']
+    ingredients = recipe_info_json['extendedIngredients']  # unpack in jinja
+    cooking_instructions = recipe_info_json['instructions']
 
-    # Send back json-ified list of jsons back to .js
+    return render_template("recipe_info.html", title=title, cuisines=cuisines,
+                           img=img, ingredients=ingredients,
+                           cooking_instructions=cooking_instructions)
 
 
 if __name__ == "__main__":

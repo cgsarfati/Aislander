@@ -1,37 +1,19 @@
-function displayRecipeSummaries(results) {
-
-    // unpack list of jsons
-    // retrieve summary keys of objects
-    // insert values of those keys into recipe-summary div
-
-} // end fn
-
 function displaySearchResults(results) {
 
     // get result key from json object, returns list
     var searchResults = results['results'];
-
-    // store ids to be packaged up
-    var recipe_ids = {
-        "recipe_id": []
-    };
 
     // unpack json
     for (var i = 0; i < searchResults.length; i++) {
 
         // format info, insert into html
         var img_url = results['baseUri'] + searchResults[i]['image'];
-        var title = searchResults[i]['title'] + "<br>";
         var img = "<img src=" + img_url + ">" + "<br>";
+        var title = "<a href='/recipe-info/" + String(searchResults[i]['id']) + "'>" + searchResults[i]['title'] + "</a>" + "<br>";
+        console.log(title);
+
         $('#recipe-title-img').append(title + img);
-
-        // append ids into object
-        var recipe_id = searchResults[i]['id'];
-        recipe_ids["recipe_id"].push(recipe_id);
     }
-
-    // send ids to server, then perform success function
-    $.get("/recipe-summaries.json", recipe_ids, displayRecipeSummaries);
 
 }
 
