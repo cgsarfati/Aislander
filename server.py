@@ -21,6 +21,9 @@ from model import connect_to_db, db, User, Recipe, Ingredient
 from model import List, CategoryRecipe, CategoryIngredient, RecipeIngredient
 from model import ListIngredient, Bookmark, RecipeCategory
 
+# Import helper functions (query/add/delete from DB)
+import helper_functions
+
 app = Flask(__name__)
 
 # Required to use Flask sessions and the debug toolbar
@@ -235,11 +238,33 @@ def process_recipe_bookmark_button():
     # Unpack info from .js
     recipe_id = request.form["recipe_id"]
 
-    # API call to get recipe info, then unpack
+    # See if recipe in DB
+    current_recipe = Recipe.query.filter(Recipe.recipe_id == recipe_id).first()
 
-    # Add that info to Recipes table (check first if recipe already exists)
+    # If not, get info from API then add to DB.
+    if not current_recipe:
+        info_response = requests.get('https://spoonacular-recipe-food-nutrition-v1.p.mashape.com/recipes/'
+                                     + recipe_id + '/information', headers=headers)
+        new_recipe_json = info_response.json()
 
-    # When it does, add info to Bookmarks table
+        # Unpack json
+        recipe_name = recipe_info_json['title']
+        img_url = recipe_info_json['image']
+        cat_id = 
+        instructions = recipe_info_json['instructions']
+
+        # Add recipe to DB
+        new_recipe = Recipe(recipe_id={}, recipe_name={}, img_url={},
+                            cat_id={}, instructions={}).format(recipe_id=recipe_id,
+                                                               recipe_name=recipe_name,
+                                                               img_url=img_url,
+                                                               cat_id=cat_id,
+                                                               instructions=instructions)
+
+    # Add info to Categories(Recipe) table (where you store cuisines)
+
+
+    # Also add info to Bookmarks table
 
     # Return something back to ajax
     return recipe_id

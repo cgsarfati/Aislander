@@ -33,24 +33,21 @@ class Recipe(db.Model):
 
     __tablename__ = 'recipes'
 
-    recipe_id = db.Column(db.Integer,
-                          autoincrement=True,
-                          primary_key=True)
+    # Recipe_id the actual Spoonacular recipe_id; not auto-incrementing
+    recipe_id = db.Column(db.String(64), nullable=False, primary_key=True)
     recipe_name = db.Column(db.String(64), nullable=False)
     img_url = db.Column(db.String(200), nullable=True)
-    cat_id = db.Column(db.Integer, db.ForeignKey('categories-rec.cat_r_id'))
     instructions = db.Column(db.String(1000), nullable=True)
 
     def __repr__(self):
         """Provide helpful representation when printed."""
 
         return """<Recipe recipe_id={} recipe_name={} img_url={}
-                          cat_id={} instructions={}>""".format(
-            self.recipe_id, self.recipe_name, self.img_url, self.cat_id,
-            self.instructions)
+                  instructions={}>""".format(self.recipe_id, self.recipe_name,
+                                             self.img_url, self.instructions)
 
-    # Define relationship to category recipe
-    category_recipe = db.relationship("CategoryRecipe", backref=db.backref("recipes"))
+    # Define relationship to cuisine
+    cuisine = db.relationship("Cuisine", backref=db.backref("recipes"))
 
 
 class Ingredient(db.Model):
@@ -62,17 +59,16 @@ class Ingredient(db.Model):
                        autoincrement=True,
                        primary_key=True)
     ing_name = db.Column(db.String(64), nullable=False)
-    cat_id = db.Column(db.Integer, db.ForeignKey('categories-ing.cat_i_id'))
+    aisle_id = db.Column(db.Integer, db.ForeignKey('aisles.aisle_id'))
 
     def __repr__(self):
         """Provide helpful representation when printed."""
 
-        return "<Ingredient ing_id={} ing_name={} cat_id={}>".format(
-            self.ing_id, self.ing_name, self.cat_id)
+        return "<Ingredient ing_id={} ing_name={} aisle_id={}>".format(
+            self.ing_id, self.ing_name, self.aisle_id)
 
-    # Define relationship to category ingredient
-    category_ingredient = db.relationship("CategoryIngredient",
-                                          backref=db.backref("ingredients"))
+    # Define relationship to aisle
+    aisle = db.relationship("Aisle", backref=db.backref("ingredients"))
 
 
 class List(db.Model):
@@ -95,41 +91,41 @@ class List(db.Model):
     # Define relationship to user
     user = db.relationship("User", backref=db.backref("lists"))
 
+
+class Cuisine(db.Model):
+    """ Category of recipes. """
+
+    __tablename__ = 'cuisines'
+
+    cuisine_id = db.Column(db.Integer,
+                           autoincrement=True,
+                           primary_key=True)
+    cuisine_name = db.Column(db.String(60), nullable=True)
+
+    def __repr__(self):
+        """Provide helpful representation when printed."""
+
+        return "<Cuisine cuisine_id={} cuisine_name={}>".format(
+            self.cuisine_id, self.cuisine_name)
+
 ##### ONE-TO-MANY TABLES #####
 
 
-class CategoryRecipe(db.Model):
-    """ Category of recipes. """
-
-    __tablename__ = 'categories-rec'
-
-    cat_r_id = db.Column(db.Integer,
-                         autoincrement=True,
-                         primary_key=True)
-    cat_r_name = db.Column(db.String(60), nullable=True)
-
-    def __repr__(self):
-        """Provide helpful representation when printed."""
-
-        return "<CategoryRecipe cat_r_id={} cat_r_name={}>".format(
-            self.cat_r_id, self.cat_r_name)
-
-
-class CategoryIngredient(db.Model):
+class Aisle(db.Model):
     """ Category of ingredients. """
 
-    __tablename__ = 'categories-ing'
+    __tablename__ = 'aisles'
 
-    cat_i_id = db.Column(db.Integer,
+    aisle_id = db.Column(db.Integer,
                          autoincrement=True,
                          primary_key=True)
-    cat_i_name = db.Column(db.String(60), nullable=True)
+    aisle_id = db.Column(db.String(60), nullable=True)
 
     def __repr__(self):
         """Provide helpful representation when printed."""
 
-        return "<CategoryIngredient cat_i_id={} cat_i_name={}>".format(
-            self.cat_i_id, self.cat_i_name)
+        return "<Aisle aisle_id={} aisle_id={}>".format(
+            self.aisle_id, self.aisle_id)
 
 ##### MIDDLE TABLES #####
 
@@ -142,7 +138,7 @@ class RecipeIngredient(db.Model):
     r_i_id = db.Column(db.Integer,
                        autoincrement=True,
                        primary_key=True)
-    recipe_id = db.Column(db.Integer, db.ForeignKey('recipes.recipe_id'))
+    recipe_id = db.Column(db.String(64), db.ForeignKey('recipes.recipe_id'))
     ing_id = db.Column(db.Integer, db.ForeignKey('ingredients.ing_id'))
     meas_unit = db.Column(db.String(30), nullable=True)
     mass_qty = db.Column(db.Integer, nullable=True)  # NOT to be incremented
@@ -205,7 +201,7 @@ class Bookmark(db.Model):
                             autoincrement=True,
                             primary_key=True)
     user_id = db.Column(db.Integer, db.ForeignKey('users.user_id'))
-    recipe_id = db.Column(db.Integer, db.ForeignKey('recipes.recipe_id'))
+    recipe_id = db.Column(db.String(64), db.ForeignKey('recipes.recipe_id'))
 
     # Define relationship to user
     user = db.relationship("User", backref=db.backref("bookmarks"))
@@ -220,31 +216,28 @@ class Bookmark(db.Model):
             self.bookmark_id, self.user_id, self.recipe_id)
 
 
-# RESEARCH API TO SEE IF THIS TABLE DEFINITION IS NEEDED
-
-class RecipeCategory(db.Model):
+class RecipeCuisine(db.Model):
     """ Recipe of particulary category / Category of particular recipe. """
 
-    __tablename__ = "recipe-categories"
+    __tablename__ = "recipe-cuisines"
 
-    rec_c_id = db.Column(db.Integer,
-                         autoincrement=True,
-                         primary_key=True)
-    cat_r_id = db.Column(db.Integer, db.ForeignKey('categories-rec.cat_r_id'))
-    recipe_id = db.Column(db.Integer, db.ForeignKey('recipes.recipe_id'))
+    recipe_cuisine_id = db.Column(db.Integer,
+                                  autoincrement=True,
+                                  primary_key=True)
+    cuisine_id = db.Column(db.Integer, db.ForeignKey('cuisines.cuisine_id'))
+    recipe_id = db.Column(db.String(64), db.ForeignKey('recipes.recipe_id'))
 
-    # Define relationship to category recipe
-    # REMEMBER table name categories-rec not category_rec
-    category_rec = db.relationship("CategoryRecipe", backref=db.backref("recipe-categories"))
+    # Define relationship to cuisine
+    cuisine = db.relationship("Cuisine", backref=db.backref("recipe-cuisines"))
 
     # Define relationship to recipe
-    recipe = db.relationship("Recipe", backref=db.backref("recipe-categories"))
+    recipe = db.relationship("Recipe", backref=db.backref("recipe-cuisines"))
 
     def __repr__(self):
         """Provide helpful representation when printed."""
 
-        return "<RecipeCategory rec_c_id={} cat_r_id={} recipe_id={}>".format(
-            self.rec_c_id, self.cat_r_id, self.recipe_id)
+        return "<RecipeCuisine recipe_cuisine_id={} cuisine_id={} recipe_id={}>".format(
+            self.recipe_cuisine_id, self.cuisine_id, self.recipe_id)
 
 
 #####################################################################
