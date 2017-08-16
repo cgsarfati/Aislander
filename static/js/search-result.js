@@ -24,8 +24,8 @@ function displaySearchResults(results) {
         var bookmarkButton = "<button type='button' class='favorite' data-recipe-id='" + recipeId + "'>Bookmark</button>";
         var addButton = "<button type='button' class='addRecipe' data-recipe-id='" + recipeId + "'>Add Recipe</button> </br>";
         
-        // add all elements together, enclosed in individual divs
-        $('.recipes').append(beginDiv + title + bookmarkButton + addButton + img + summary + endDiv);
+        // add all elements together; each recipe will have its own div
+        $('#recipes').append(beginDiv + title + bookmarkButton + addButton + img + summary + endDiv);
     }
 
 }

@@ -180,12 +180,26 @@ def display_searchbox_and_list():
     return render_template("dashboard.html")
 
 
+@app.route("/grocery-list.json")
+@login_required
+def process_new_list():
+    """ Creates new grocery list that will be added to DB. Returns empty list. """
+
+    # Unpack formInputs
+    recipe_search = request.form["new_list_name"]
+
+    # Add new empty list to DB
+
+    # Return something
+    return recipe_search
+
+
 @app.route("/search.json")
 @login_required
 def process_recipe_search():
     """ Processes recipe search with Spoonacular API. """
 
-    # Unpack formInputs (recipe_search is the key)
+    # Unpack formInputs
     recipe_search = request.args["recipe_search"]
 
     # Set up parameters for API call, then call API
@@ -213,14 +227,36 @@ def process_recipe_search():
     return jsonify(results_json)
 
 
-@app.route("/bookmark.json", METHODS=["POST"])
+@app.route("/bookmark.json", methods=["POST"])
 @login_required
-def process_recipe_bookmark(recipe_id):
-    """ Adds recipe to be bookmarked into DB. """
+def process_recipe_bookmark_button():
+    """ Adds recipe to DB, returns success message. """
 
-    # Unpacks info from .js
-    # Adds info to DB
-    # Return something
+    # Unpack info from .js
+    recipe_id = request.form["recipe_id"]
+
+    # API call to get recipe info, then unpack
+
+    # Add that info to Recipes table (check first if recipe already exists)
+
+    # When it does, add info to Bookmarks table
+
+    # Return something back to ajax
+    return recipe_id
+
+
+# @app.route("/add_to_list.json", methods=["POST"])
+# @login_required
+# def process_add_to_list_button():
+#     """ Adds recipe ingredients to list and stores it in DB,
+#     returns updated list in browser. """
+
+#     # Unpack info from .js
+
+#     # API query the ingredients, extract needed info to be transferred to DB.
+
+#     # Return data to display on list
+#     pass
 
 
 #################### DETAILED RECIPE INFO ####################
