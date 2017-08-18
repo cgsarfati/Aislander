@@ -34,10 +34,11 @@ def add_recipe(recipe_id):
     # Isolate ing. key to be looped over
     ingredients_info = new_recipe_json['extendedIngredients']
 
+    # Loop through ing. list
     for ingredient_info in ingredients_info:
 
         # Isolate id from info pkg, then check if in DB
-        ingredient_id = ingredient_info['id']
+        ingredient_id = str(ingredient_info['id'])
         current_ingredient = Ingredient.query.filter(Ingredient.ing_id == ingredient_id).first()
 
         # If ing not in DB, instantiate + check if ing's aisle in DB
@@ -45,8 +46,7 @@ def add_recipe(recipe_id):
 
             # create ingredient object that may or may not have aisle id info
             new_ingredient = Ingredient(ing_id=ingredient_id,
-                                        ing_name=ingredient_info['name'],
-                                        aisle_id=None)
+                                        ing_name=ingredient_info['name'])
 
             # get ing info package, isolate its aisle. Check if in DB.
             aisle_name = ingredient_info['aisle']
@@ -62,6 +62,9 @@ def add_recipe(recipe_id):
 
                 # Add aisle_id that was previously None during instantiation
                 new_ingredient.aisle_id = new_aisle.aisle_id
+
+            else:
+                new_ingredient.aisle_id = current_aisle.aisle_id
 
             # Now, back at the ingredient loop, new_ing should have aisle_id
             ########## ADD INGREDIENT TO DB ##########
@@ -83,16 +86,42 @@ def add_recipe(recipe_id):
     # since cuisines is a list in the json.
 
     # Isolate cuisine list
-    cuisine_list = new_recipe_json['cuisines']
+    cuisines = new_recipe_json['cuisines']
+
+    for cuisine in cuisines:
+
+        # Check if cuisine in DB
+        current_cuisine = Cuisine.query.filter(Cuisine.cuisine_name == cuisine).first()
+
+        # If not, instantiate + add to DB
+        if not current_cuisine:
+            new_cuisine = Cuisine(cuisine_name=cuisine)
+
+            ########## ADD CUISINE TO DB ##########
+            db.session.add(new_cuisine)
+            db.session.commit()
+
+            cuisine_id = new_cuisine.cuisine_id
+
+        else:
+            cuisine_id = current_cuisine.cuisine_id
+
+        new_recipe_cuisine = RecipeCuisine(cuisine_id=cuisine_id, recipe_id=recipe_id)
+        db.session.add(new_recipe_cuisine)
+        db.session.commit()
+
+    return new_recipe
 
 
+# def add_bookmark():
+#     """ Adds recipe to Bookmarks table. """
 
-def add_bookmark():
-    # new_rec.bookmark.users.append(current_user_obj)
+#     # Currently have access to current_user object
+#     # new_rec.bookmark.users.append(current_user_obj)
 
-    pass
+#     pass
 
 
-def add_to_list():
+# def add_to_list():
 
-    pass
+#     pass

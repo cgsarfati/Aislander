@@ -21,7 +21,7 @@ from model import connect_to_db, db, User, Recipe, Ingredient, List, Cuisine
 from model import Aisle, RecipeIngredient, ListIngredient, Bookmark, RecipeCuisine
 
 # Import helper functions (query/add/delete from DB)
-# import helper_functions
+import helper_functions
 
 app = Flask(__name__)
 
@@ -229,25 +229,25 @@ def process_recipe_search():
     return jsonify(results_json)
 
 
-# @app.route("/bookmark.json", methods=["POST"])
-# @login_required
-# def process_recipe_bookmark_button():
-#     """ Adds recipe to DB, returns success message. """
+@app.route("/bookmark.json", methods=["POST"])
+@login_required
+def process_recipe_bookmark_button():
+    """ Adds recipe to DB, returns success message. """
 
-#     # Unpack info from .js
-#     recipe_id = request.form["recipe_id"]
+    # Unpack info from .js
+    recipe_id = request.form["recipe_id"]
 
-#     # See if recipe in DB. If not, add new recipe to DB.
-#     current_recipe = Recipe.query.filter(Recipe.recipe_id == recipe_id).first()
+    # See if recipe in DB. If not, add new recipe to DB.
+    current_recipe = Recipe.query.filter(Recipe.recipe_id == recipe_id).first()
 
-#     if not current_recipe:
-#         current_recipe = helper_functions.add_recipe(recipe_id)
+    if not current_recipe:
+        current_recipe = helper_functions.add_recipe(recipe_id)
 
-#     # Once recipe in DB, access recipe's cuisine list.
-#     # Cross match each cuisine to current cuisines in DB. Add any new ones.
+    # # Bookmark recipe
+    # helper_functions.add_bookmark(g.current_user)
 
-#     # Return something back to ajax
-#     return recipe_id
+    # Return something back to ajax
+    return recipe_id
 
 
 # @app.route("/add_to_list.json", methods=["POST"])
