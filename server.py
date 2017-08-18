@@ -17,12 +17,11 @@ from flask import Flask, render_template, request, flash, redirect, session, g, 
 from flask_debugtoolbar import DebugToolbarExtension
 
 # Import model.py table definitions
-from model import connect_to_db, db, User, Recipe, Ingredient
-from model import List, CategoryRecipe, CategoryIngredient, RecipeIngredient
-from model import ListIngredient, Bookmark, RecipeCategory
+from model import connect_to_db, db, User, Recipe, Ingredient, List, Cuisine
+from model import Aisle, RecipeIngredient, ListIngredient, Bookmark, RecipeCuisine
 
 # Import helper functions (query/add/delete from DB)
-import helper_functions
+# import helper_functions
 
 app = Flask(__name__)
 
@@ -230,44 +229,25 @@ def process_recipe_search():
     return jsonify(results_json)
 
 
-@app.route("/bookmark.json", methods=["POST"])
-@login_required
-def process_recipe_bookmark_button():
-    """ Adds recipe to DB, returns success message. """
+# @app.route("/bookmark.json", methods=["POST"])
+# @login_required
+# def process_recipe_bookmark_button():
+#     """ Adds recipe to DB, returns success message. """
 
-    # Unpack info from .js
-    recipe_id = request.form["recipe_id"]
+#     # Unpack info from .js
+#     recipe_id = request.form["recipe_id"]
 
-    # See if recipe in DB
-    current_recipe = Recipe.query.filter(Recipe.recipe_id == recipe_id).first()
+#     # See if recipe in DB. If not, add new recipe to DB.
+#     current_recipe = Recipe.query.filter(Recipe.recipe_id == recipe_id).first()
 
-    # If not, get info from API then add to DB.
-    if not current_recipe:
-        info_response = requests.get('https://spoonacular-recipe-food-nutrition-v1.p.mashape.com/recipes/'
-                                     + recipe_id + '/information', headers=headers)
-        new_recipe_json = info_response.json()
+#     if not current_recipe:
+#         current_recipe = helper_functions.add_recipe(recipe_id)
 
-        # Unpack json
-        recipe_name = recipe_info_json['title']
-        img_url = recipe_info_json['image']
-        cat_id = 
-        instructions = recipe_info_json['instructions']
+#     # Once recipe in DB, access recipe's cuisine list.
+#     # Cross match each cuisine to current cuisines in DB. Add any new ones.
 
-        # Add recipe to DB
-        new_recipe = Recipe(recipe_id={}, recipe_name={}, img_url={},
-                            cat_id={}, instructions={}).format(recipe_id=recipe_id,
-                                                               recipe_name=recipe_name,
-                                                               img_url=img_url,
-                                                               cat_id=cat_id,
-                                                               instructions=instructions)
-
-    # Add info to Categories(Recipe) table (where you store cuisines)
-
-
-    # Also add info to Bookmarks table
-
-    # Return something back to ajax
-    return recipe_id
+#     # Return something back to ajax
+#     return recipe_id
 
 
 # @app.route("/add_to_list.json", methods=["POST"])
