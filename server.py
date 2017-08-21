@@ -181,23 +181,36 @@ def display_profile(username):
 @app.route("/dashboard")
 @login_required
 def display_searchbox_and_list():
-    """ Displays dashboard with recipe search + empty grocery list. """
+    """ Displays dashboard with recipe search + display list feature. """
 
-    return render_template("dashboard.html")
+    # Access all of current user's lists, returns a list of list objects
+    user_lists = List.query.filter(List.user_id == g.current_user.user_id).all()
+
+    return render_template("dashboard.html", user_lists=user_lists)
 
 
-@app.route("/grocery-list.json")
+@app.route("/new-list.json", methods=['POST'])
 @login_required
 def process_new_list():
     """ Creates new grocery list that will be added to DB. Returns empty list. """
 
     # Unpack formInputs
-    recipe_search = request.form["new_list_name"]
+    new_list_name = request.form["new_list_name"]
 
-    # Add new empty list to DB
+    # Pack up list info
+    list_info = [g.current_user.user_id, new_list_name]
 
-    # Return something
-    return recipe_search
+    # Check if list already exists for particular user. If not, add.
+    current_list = List.query.filter((List.list_name == new_list_name) & (List.user_id == g.current_user.user_id)).first()
+
+    if not current_list:
+        new_list = helper_functions.add_new_list(list_info)
+        new_list_name = new_list.list_name
+        return new_list_name
+    else:
+        # Throw error message if list already exists
+        error_message = "That list already exists. Try again!"
+        return error_message
 
 
 @app.route("/search.json")
@@ -255,7 +268,6 @@ def process_recipe_bookmark_button():
 
     # Return recipe id to success function
     return recipe_id
-
 
 # @app.route("/add_to_list.json", methods=["POST"])
 # @login_required

@@ -1,11 +1,15 @@
 function displayNewList(results) {
 
-    // rename returned data
-    var newlistName = results;
+    // results either new list name (success) or error message (try again)
 
-    // alert user that recipe is bookmarked
-    alert(newlistName + "has been added as a new list!");
-
+    if (results === "That list already exists. Try again!") {
+        // error message
+        alert(results);
+    } else {
+        // rename, show list
+        var new_list_name = results;
+        $('#lists').append(new_list_name + ' | ');
+    } // end conditional
 } // end fn
 
 function handleCreateNewList(evt) {
@@ -13,11 +17,11 @@ function handleCreateNewList(evt) {
 
     // package up form input values
     var formInputs = {
-        "new_list_name": $("#new-list-name").val(),
+        "new_list_name": $("#new-list-name").val()
     };
 
     // send form to server, then perform success function
-    $.post("/grocery-list.json", formInputs, displayNewList);
+    $.post("/new-list.json", formInputs, displayNewList);
 
 } // end fn
 

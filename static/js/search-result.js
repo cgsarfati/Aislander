@@ -7,7 +7,6 @@ function displaySearchResults(results) {
     for (var i = 0; i < searchResults.length; i++) {
 
         // format info into elements
-
         var beginDiv = "<div class='recipe'>";
         var endDiv = "</div>";
 

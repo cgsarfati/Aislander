@@ -124,3 +124,16 @@ def add_bookmark(bookmark_info):
     db.session.commit()
 
     return new_bookmark
+
+
+def add_new_list(list_info):
+    """ Adds new list to List table. """
+
+    # list_info is a list --> [current_user_id, new_list_name]
+
+    new_list = List(user_id=list_info[0], list_name=list_info[1])
+
+    db.session.add(new_list)
+    db.session.commit()
+
+    return new_list
