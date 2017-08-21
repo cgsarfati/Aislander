@@ -169,7 +169,11 @@ def display_profile(username):
     # Crossmatch with DB to find that particular user's info. Returns object.
     user = User.query.filter(User.username == username).first()
 
-    return render_template("user_profile.html", username=user.username, email=user.email)
+    # Access bookmarks
+    bookmarked_recipes = user.recipes  # a list of recipe objects
+
+    return render_template("user_profile.html", username=user.username,
+                           email=user.email, bookmarked_recipes=bookmarked_recipes)
 
 
 #################### DASHBOARD (RECIPE SEARCH/GROCERY LIST) ####################
@@ -247,9 +251,9 @@ def process_recipe_bookmark_button():
     # Extract recipe_id and user_id to put into DB
     bookmark_info = [g.current_user.user_id, current_recipe.recipe_id]
 
-    new_bookmark = helper_functions.add_bookmark(bookmark_info)
+    helper_functions.add_bookmark(bookmark_info)
 
-    # Return something back to ajax
+    # Return recipe id to success function
     return recipe_id
 
 

@@ -7,8 +7,14 @@
 <h2> User Profile </h2>
 
 Username: {{ username }} <br>
+
 Email: {{ email }} <br>
-Bookmarked Recipes: <br>
+
+Bookmarked Recipes:
+  {% for recipe in bookmarked_recipes %}
+    <a href="/recipe-info/{{recipe.recipe_id}}"> {{ recipe.recipe_name }} </a>| 
+  {% endfor %} <br>
+
 Your grocery lists: <br>
 
 {% endblock %}
