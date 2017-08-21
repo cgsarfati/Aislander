@@ -192,7 +192,8 @@ def display_searchbox_and_list():
 @app.route("/new-list.json", methods=['POST'])
 @login_required
 def process_new_list():
-    """ Creates new grocery list that will be added to DB. Returns empty list. """
+    """ Creates new grocery list that will be added to DB + displays in current
+    page without having to refresh. """
 
     # Unpack formInputs
     new_list_name = request.form["new_list_name"]
@@ -260,27 +261,20 @@ def process_recipe_bookmark_button():
     if not current_recipe:
         current_recipe = helper_functions.add_recipe(recipe_id)
 
-    # Here, current_recipe will either be existing or new, but both are now objects.
-    # Extract recipe_id and user_id to put into DB
+    # Extract recipe_id and user_id to put into Bookmarks table in DB
     bookmark_info = [g.current_user.user_id, current_recipe.recipe_id]
 
-    helper_functions.add_bookmark(bookmark_info)
+    # Check if user already bookmarked recipe. If not, add to DB.
+    current_bookmark = Bookmark.query.filter((Bookmark.recipe_id == current_recipe.recipe_id) & (Bookmark.user_id == g.current_user.user_id)).first()
 
-    # Return recipe id to success function
-    return recipe_id
-
-# @app.route("/add_to_list.json", methods=["POST"])
-# @login_required
-# def process_add_to_list_button():
-#     """ Adds recipe ingredients to list and stores it in DB,
-#     returns updated list in browser. """
-
-#     # Unpack info from .js
-
-#     # API query the ingredients, extract needed info to be transferred to DB.
-
-#     # Return data to display on list
-#     pass
+    if not current_bookmark:
+        helper_functions.add_bookmark(bookmark_info)
+        success_message = "This recipe has been bookmarked!"
+        return success_message
+    else:
+        # Throw error message if bookmark already exists
+        error_message = "You've already bookmarked this recipe."
+        return error_message
 
 
 #################### DETAILED RECIPE INFO ####################

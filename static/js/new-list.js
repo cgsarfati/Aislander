@@ -23,8 +23,7 @@ function handleCreateNewList(evt) {
     // send form to server, then perform success function
     $.post("/new-list.json", formInputs, displayNewList);
 
-} // end fn
-
+}
 
 // event listener for creating new list in dashboard.html
 $("#new-list").on("submit", handleCreateNewList);

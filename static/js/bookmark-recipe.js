@@ -1,8 +1,15 @@
 function printBookmarkSuccess(results) {
 
-    // alert user that recipe is bookmarked
-    alert(results + " has been bookmarked!");
-}
+    // results either success or error message
+
+    if (results === "You've already bookmarked this recipe.") {
+        // error message
+        alert(results);
+    } else {
+        // success message
+        alert(results);
+    } // end conditional
+} // end fn
 
 function handleBookmarkRecipe(evt) {
 
