@@ -243,8 +243,11 @@ def process_recipe_bookmark_button():
     if not current_recipe:
         current_recipe = helper_functions.add_recipe(recipe_id)
 
-    # # Bookmark recipe
-    # helper_functions.add_bookmark(g.current_user)
+    # Here, current_recipe will either be existing or new, but both are now objects.
+    # Extract recipe_id and user_id to put into DB
+    bookmark_info = [g.current_user.user_id, current_recipe.recipe_id]
+
+    new_bookmark = helper_functions.add_bookmark(bookmark_info)
 
     # Return something back to ajax
     return recipe_id

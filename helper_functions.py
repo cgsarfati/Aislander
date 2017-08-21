@@ -113,15 +113,14 @@ def add_recipe(recipe_id):
     return new_recipe
 
 
-# def add_bookmark():
-#     """ Adds recipe to Bookmarks table. """
+def add_bookmark(bookmark_info):
+    """ Adds recipe to Bookmarks table. """
 
-#     # Currently have access to current_user object
-#     # new_rec.bookmark.users.append(current_user_obj)
+    # bookmark_info is a list --> [current_user_id, current_recipe_id]
 
-#     pass
+    new_bookmark = Bookmark(user_id=bookmark_info[0], recipe_id=bookmark_info[1])
 
+    db.session.add(new_bookmark)
+    db.session.commit()
 
-# def add_to_list():
-
-#     pass
+    return new_bookmark
