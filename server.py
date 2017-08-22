@@ -206,8 +206,11 @@ def process_new_list():
 
     if not current_list:
         new_list = helper_functions.add_new_list(list_info)
-        new_list_name = new_list.list_name
-        return new_list_name
+
+        # Package up to have list id (for hidden data) + list name
+        # Need to be sent back to success function as dictionary
+        list_info = {'list_name': new_list.list_name, 'list_id': new_list.list_id}
+        return jsonify(list_info)
     else:
         # Throw error message if list already exists
         error_message = "That list already exists. Try again!"

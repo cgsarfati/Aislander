@@ -117,7 +117,6 @@ def add_bookmark(bookmark_info):
     """ Adds recipe to Bookmarks table. """
 
     # bookmark_info is a list --> [current_user_id, current_recipe_id]
-
     new_bookmark = Bookmark(user_id=bookmark_info[0], recipe_id=bookmark_info[1])
 
     db.session.add(new_bookmark)
@@ -130,7 +129,6 @@ def add_new_list(list_info):
     """ Adds new list to List table. """
 
     # list_info is a list --> [current_user_id, new_list_name]
-
     new_list = List(user_id=list_info[0], list_name=list_info[1])
 
     db.session.add(new_list)

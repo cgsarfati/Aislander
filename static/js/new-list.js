@@ -6,9 +6,13 @@ function displayNewList(results) {
         // error message
         alert(results);
     } else {
-        // rename, show list
-        var new_list_name = results;
-        $('#lists').append(new_list_name + ' | ');
+        // unpack list info [name, id]
+        var listName = results['list_name'];
+        var listId = results['list_id'];
+
+        var listButton = "<button type='button' class='user-list' data-list-id='" + listId + "'>" + listName + "</button>";
+
+        $('#user-lists').append(listButton + " | ");
     } // end conditional
 } // end fn
 
