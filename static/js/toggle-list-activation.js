@@ -9,4 +9,5 @@ function changeListStatus(evt) {
 
 } // end fn
 
+// event listener for isolating lists
 $(document).on('click', '.user-list', changeListStatus);

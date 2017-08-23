@@ -280,6 +280,51 @@ def process_recipe_bookmark_button():
         return error_message
 
 
+@app.route("/add-to-list.json", methods=["POST"])
+@login_required
+def process_add_to_list_button():
+    """ Adds recipe ingredients to ListIngredient table. """
+
+    # Unpack info from .js
+    recipe_id = request.form['recipeId']
+    list_id = request.form['listId']
+
+    # Goal: user clicks "add to list" button. After that click, opened list will
+    # populate with updated ingredients. No reloading the page to see this.
+
+    # Check if recipe in DB. if not, add. In this process, the RecipeIngredient
+    # table will be populated, allowing you to get relevant info.
+
+    # You need the ingredients from that recipe (info located in RecipeIngredient)
+    # because you will use its ing_ids, measurements, and units fields for the
+    # ListIngredient table.
+
+    # First check if the ing_id exists in the ListIngredients table.
+    # If it doesn't, add those three fields from RecipeIngredient straight
+    # to ListIngredient using the recipe_id as the key. This will
+    # involve a for loop since you're doing this check for each ingredient.
+
+    # (2.0) Now, it gets complicated if the ingredient already exists since
+    # the measurements and units of that ingredient will come into play.
+    # First, extract the RecipeIngredient's 3 fields (ing_id, meas quant., unit)
+    # and the ListIngredient's 3 fields (ing_id, meas quant., unit).
+
+    # (2.0) Then, clean up the units because it seems that the name differs from
+    # the Spoonacular json (e.g. C, cup, cups). Once that is standardized,
+    # add the RecipeIngredient meas. quant. to the ListIngredient meas. quant in
+    # ListIngredient. The final result should be an incremented ListIngredient
+    # meas. quant.
+
+    # What is returned here (by the way all those querying/adding above happens
+    # in the helper_functions file) is a list of all the ingredient objects
+    # from the ListIngredient table. Return that to the success function.
+
+    # In the success function, unpack those ingredient objects so that
+    # you'll have the strings of the ingredient name, meas, and unit to be
+    # displayed in the browser. The ingredient name is found in the
+    # Ingredients table, so just use the ing_id as the key.
+
+
 #################### DETAILED RECIPE INFO ####################
 
 @app.route("/recipe-info/<recipe_id>")

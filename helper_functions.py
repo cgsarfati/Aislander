@@ -15,7 +15,7 @@ headers = {"X-Mashape-Key": os.environ['RECIPE_CONSUMER_KEY'],
 
 def add_recipe(recipe_id):
     """ Adds recipe to Recipes table as well as appending its ingredients and
-    cuisines to the Ingredients and Cuisines tables. """
+    cuisines to the Ingredient, Cuisine, and RecipeIngredient tables. """
 
     # Get info from API and store as json
     info_response = requests.get('https://spoonacular-recipe-food-nutrition-v1.p.mashape.com/recipes/'
