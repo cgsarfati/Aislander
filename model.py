@@ -157,7 +157,7 @@ class RecipeIngredient(db.Model):
         return """<RecipeIngredient r_i_id={} recipe_id={} ing_id={}
                   meas_unit={} mass_qty={}>""".format(self.r_i_id, self.recipe_id,
                                                       self.ing_id, self.meas_unit,
-                                                      self.mass.qty)
+                                                      self.mass_qty)
 
 
 class ListIngredient(db.Model):
@@ -184,7 +184,7 @@ class ListIngredient(db.Model):
         return """<ListIngredient l_i_id={} list_id={} ing_id={}
                   meas_unit={} mass_qty={}>""".format(self.l_i_id, self.list_id,
                                                       self.ing_id, self.meas_unit,
-                                                      self.mass.qty)
+                                                      self.mass_qty)
 
 ##### ASSOCATION TABLES #####
 

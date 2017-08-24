@@ -289,40 +289,32 @@ def process_add_to_list_button():
     recipe_id = request.form['recipeId']
     list_id = request.form['listId']
 
-    # Goal: user clicks "add to list" button. After that click, opened list will
-    # populate with updated ingredients. No reloading the page to see this.
-
     # Check if recipe in DB. if not, add. In this process, the RecipeIngredient
     # table will be populated, allowing you to get relevant info.
 
-    # You need the ingredients from that recipe (info located in RecipeIngredient)
-    # because you will use its ing_ids, measurements, and units fields for the
-    # ListIngredient table.
+    current_recipe = Recipe.query.filter(Recipe.recipe_id == recipe_id).first()
 
-    # First check if the ing_id exists in the ListIngredients table.
-    # If it doesn't, add those three fields from RecipeIngredient straight
-    # to ListIngredient using the recipe_id as the key. This will
-    # involve a for loop since you're doing this check for each ingredient.
+    if not current_recipe:
+        current_recipe = helper_functions.add_recipe(recipe_id)
 
-    # (2.0) Now, it gets complicated if the ingredient already exists since
-    # the measurements and units of that ingredient will come into play.
-    # First, extract the RecipeIngredient's 3 fields (ing_id, meas quant., unit)
-    # and the ListIngredient's 3 fields (ing_id, meas quant., unit).
+    # Add ingredients to current list, returns list of ListIngredient objects
+    list_ingredients = helper_functions.add_to_list(recipe_id, list_id)
 
-    # (2.0) Then, clean up the units because it seems that the name differs from
-    # the Spoonacular json (e.g. C, cup, cups). Once that is standardized,
-    # add the RecipeIngredient meas. quant. to the ListIngredient meas. quant in
-    # ListIngredient. The final result should be an incremented ListIngredient
-    # meas. quant.
+    # Crossmatch it with the Ingredients table so you can access the ing. names
+    # You should end up having a list of Ingredient objects that have the
+    # ingredients' names
 
-    # What is returned here (by the way all those querying/adding above happens
-    # in the helper_functions file) is a list of all the ingredient objects
-    # from the ListIngredient table. Return that to the success function.
+    ingredient_names = []
 
-    # In the success function, unpack those ingredient objects so that
-    # you'll have the strings of the ingredient name, meas, and unit to be
-    # displayed in the browser. The ingredient name is found in the
-    # Ingredients table, so just use the ing_id as the key.
+    # import pdb; pdb.set_trace()
+
+    for list_ingredient in list_ingredients:
+        ingredient_name = list_ingredient.ingredient.ing_name
+        ingredient_names.append(ingredient_name)
+
+    ingredient_info = {'ing_name': ingredient_names}  # value's data type is list
+
+    return jsonify(ingredient_info)
 
 
 #################### DETAILED RECIPE INFO ####################

@@ -135,3 +135,25 @@ def add_new_list(list_info):
     db.session.commit()
 
     return new_list
+
+
+def add_to_list(recipe_id, list_id):
+    """ Adds recipe ingredients to ListIngredient table. """
+
+    # Get list of recipe_ingredient objects that have ing_ids, meas, and units
+    recipe_ingredients = RecipeIngredient.query.filter(RecipeIngredient.recipe_id == recipe_id).all()
+
+    # This will be appended with new ListIngredient objects
+    updated_list_ingredients = []
+
+    for recipe_ingredient in recipe_ingredients:
+        new_ListIngredient = ListIngredient(list_id=list_id,
+                                            ing_id=recipe_ingredient.ing_id,
+                                            meas_unit=recipe_ingredient.meas_unit,
+                                            mass_qty=recipe_ingredient.mass_qty)
+        db.session.add(new_ListIngredient)
+        db.session.commit()
+        updated_list_ingredients.append(new_ListIngredient)
+
+    # Return the list of ListIngredient objects
+    return updated_list_ingredients
