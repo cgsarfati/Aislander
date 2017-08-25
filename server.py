@@ -169,11 +169,15 @@ def display_profile(username):
     # Crossmatch with DB to find that particular user's info. Returns object.
     user = User.query.filter(User.username == username).first()
 
-    # Access bookmarks
+    # Load bookmarks
     bookmarked_recipes = user.recipes  # a list of recipe objects
 
+    # Load grocery lists
+    user_lists = helper_functions.load_user_lists(g.current_user)
+
     return render_template("user_profile.html", username=user.username,
-                           email=user.email, bookmarked_recipes=bookmarked_recipes)
+                           email=user.email, bookmarked_recipes=bookmarked_recipes,
+                           user_lists=user_lists)
 
 
 #################### DASHBOARD (RECIPE SEARCH/GROCERY LIST) ####################

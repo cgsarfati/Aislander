@@ -6,15 +6,40 @@
 
 <h2> User Profile </h2>
 
+<!-- USER INFO -->
 Username: {{ username }} <br>
 
 Email: {{ email }} <br>
 
+<!-- BOOKMARK -->
 Bookmarked Recipes:
   {% for recipe in bookmarked_recipes %}
     <a href="/recipe-info/{{recipe.recipe_id}}"> {{ recipe.recipe_name }} </a>| 
   {% endfor %} <br>
 
-Your grocery lists: <br>
+<!-- GROCERY LIST NAMES + INGREDIENTS -->
+Grocery lists: 
+  <span id='user-lists'>
+    {% for lst in user_lists %}
+      <button type='button' class='user-list' data-list-id='{{ lst.list_id }}'> 
+        {{ lst.list_name }} </button> |
+    {% endfor %} 
+  </span> <br>
+
+  <input type='hidden' id='list-activation-handler' value='1'>
+
+  <div id='grocery-lists'>
+    {% for lst in user_lists %}
+      <div class='grocery-list' data-list-id='{{ lst.list_id }}'>
+        {% for ingredient in lst.list_ingredients %}
+          {{ ingredient.mass_qty }} {{ ingredient.meas_unit }} 
+          {{ ingredient.ingredient.ing_name }} <br>
+        {% endfor %}
+      </div>
+    {% endfor %} 
+  </div>
+
+<!-- IMPORT AJAX FILES -->
+<script src="/static/js/toggle-list-activation.js" type="text/javascript"></script>
 
 {% endblock %}
