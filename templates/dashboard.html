@@ -32,7 +32,12 @@
   Current grocery list:
   <div id='grocery-lists'>
     {% for lst in user_lists %}
-      <div class='grocery-list' data-list-id='{{ lst.list_id }}'> </div>
+      <div class='grocery-list' data-list-id='{{ lst.list_id }}'>
+        {% for ingredient in lst.list_ingredients %}
+          {{ ingredient.mass_qty }} {{ ingredient.meas_unit }} 
+          {{ ingredient.ingredient.ing_name }} <br>
+        {% endfor %}
+      </div>
     {% endfor %} 
   </div>
 

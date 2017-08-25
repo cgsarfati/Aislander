@@ -157,3 +157,9 @@ def add_to_list(recipe_id, list_id):
 
     # Return the list of ListIngredient objects
     return updated_list_ingredients
+
+
+def load_user_lists(current_user):
+    """ Initially loads current user's lists onto dashboard page. """
+
+    return current_user.lists

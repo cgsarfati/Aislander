@@ -183,8 +183,11 @@ def display_profile(username):
 def display_searchbox_and_list():
     """ Displays dashboard with recipe search + display list feature. """
 
-    # Access all of current user's lists, returns a list of list objects
-    user_lists = List.query.filter(List.user_id == g.current_user.user_id).all()
+    # Access all of current user's list names, returns a list of List objects
+    # Use relationships in jinja to access ingredient names, measurements,
+    # and units
+
+    user_lists = helper_functions.load_user_lists(g.current_user)
 
     return render_template("dashboard.html", user_lists=user_lists)
 
@@ -300,19 +303,32 @@ def process_add_to_list_button():
     # Add ingredients to current list, returns list of ListIngredient objects
     list_ingredients = helper_functions.add_to_list(recipe_id, list_id)
 
-    # Crossmatch it with the Ingredients table so you can access the ing. names
-    # You should end up having a list of Ingredient objects that have the
-    # ingredients' names
+    # Create a dictionary that sends ingredient name, meas, and quant
+    # back to ajax success function
 
-    ingredient_names = []
+    ingredient_info = {"list_ingredients": []}
 
-    # import pdb; pdb.set_trace()
+    # FORMAT EXAMPLE:
+    # per list item in ingredient_info above:
+    #
+    # new_ingredient = {'mass_qty': mass_qty,
+    #                   'meas_unit': meas_unit,
+    #                   'ingredient': {
+    #                     'name': name,
+    #                     'aisle_name': aisle_name
+    #                     }
+    #                   }
 
-    for list_ingredient in list_ingredients:
-        ingredient_name = list_ingredient.ingredient.ing_name
-        ingredient_names.append(ingredient_name)
+    for ingredient in list_ingredients:
+        new_ingredient = {}
+        new_ingredient["mass_qty"] = ingredient.mass_qty
+        new_ingredient["meas_unit"] = ingredient.meas_unit
 
-    ingredient_info = {'ing_name': ingredient_names}  # value's data type is list
+        new_ingredient["ingredient"] = {}
+        new_ingredient["ingredient"]["name"] = ingredient.ingredient.ing_name
+        new_ingredient["ingredient"]["aisle_name"] = ingredient.ingredient.aisle.aisle_name
+
+        ingredient_info["list_ingredients"].append(new_ingredient)
 
     return jsonify(ingredient_info)
 

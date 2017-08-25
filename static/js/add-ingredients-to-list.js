@@ -1,12 +1,17 @@
 function DisplayUpdatedGroceryList(results) {
 
-    // unpack info and place inside grocery list span tag
-    var ingredientNames = results['ing_name'];
+    // rename data that you received back from server
+    var ingredientInfo = results['list_ingredients'];
 
     var listId = $("#list-activation-handler").val();
 
-    for (var i = 0; i < ingredientNames.length; i++) {
-        $('div[data-list-id=' + listId + ']').append(ingredientNames[i]);
+    for (var i = 0; i < ingredientInfo.length; i++) {
+        // unpack info and place inside grocery list span tag
+        var name = ingredientInfo[i]['ingredient']['name'];
+        var quantity = ingredientInfo[i]['mass_qty'];
+        var unit = ingredientInfo[i]['meas_unit'];
+
+        $('div[data-list-id=' + listId + ']').append(String(quantity) + ' ' + unit + ' ' + name + '<br>');
     }
 
 } // end fn

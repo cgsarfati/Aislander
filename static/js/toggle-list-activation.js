@@ -9,7 +9,6 @@ function changeListStatus(evt) {
     // access div tags of grocery list, and set all to hide initially
     // then isolate div tag of that particular list
     $(".grocery-list").hide();
-
     $('div[data-list-id=' + listId + ']').show();
 
 } // end fn
