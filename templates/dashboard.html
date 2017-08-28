@@ -21,8 +21,8 @@
   <!-- DISPLAYS EXISTING LISTS -->
   Current lists: 
     <span id='user-lists'>
-      {% for lst in user_lists %}
-        <button type='button' class='user-list' data-list-id='{{ lst.list_id }}'> {{ lst.list_name }} </button> |
+      {% for lst in grocery_list_info %}
+        <button type='button' class='user-list' data-list-id='{{ lst[0] }}'> {{ lst[1] }} </button> |
       {% endfor %} 
     </span> <br>
 
@@ -31,12 +31,17 @@
   <!-- DISPLAYS CURRENT LIST'S INGREDIENTS -->
   Current grocery list:
   <div id='grocery-lists'>
-    {% for lst in user_lists %}
-      <div class='grocery-list' data-list-id='{{ lst.list_id }}'>
-        {% for ingredient in lst.list_ingredients %}
-          {{ ingredient.mass_qty }} {{ ingredient.meas_unit }} 
-          {{ ingredient.ingredient.ing_name }} <br>
-        {% endfor %}
+    {% for lst in grocery_list_info %}
+      <div class='grocery-list' data-list-id='{{ lst[0] }}'>
+        {% for aisle in grocery_list_info[lst] %}
+          <div class='aisle' data-aisle-name='{{ aisle }}'> 
+            <ul> {{ aisle }} <ul>
+              {% for ingredient in grocery_list_info[lst][aisle] %}
+                <li> {{ ingredient['ing_qty'] }} {{ ingredient['ing_unit'] }}
+                {{ ingredient['ing_name'] }} </li>
+              {% endfor %}
+          </div>
+        {% endfor %} 
       </div>
     {% endfor %} 
   </div>

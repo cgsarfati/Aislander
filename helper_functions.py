@@ -163,3 +163,33 @@ def load_user_lists(current_user):
     """ Initially loads current user's lists onto dashboard page. """
 
     return current_user.lists
+
+
+def load_aisles(user_lists):
+    """ Creates dictionary containing ingredient info for each aisle in each
+    grocery list. """
+
+    # Create empty dictionary (will store all info at end)
+    grocery_dictionary = {}
+
+    # Loop through each grocery list
+    for user_list in user_lists:
+        aisles = {}  # Will be populated with aisles and ingredients later
+        list_key = (user_list.list_id, user_list.list_name)  # Will add to dict at end once aisles dict fills up
+
+        for list_ingredient in user_list.list_ingredients:
+            aisle_name = list_ingredient.ingredient.aisle.aisle_name
+            # If aisle exists, add to list. if not, create new aisle with new list
+            if aisle_name in aisles:
+                aisles[aisle_name].append({'ing_qty': list_ingredient.mass_qty,
+                                           'ing_unit': list_ingredient.meas_unit,
+                                           'ing_name': list_ingredient.ingredient.ing_name})
+            else:
+                aisles[aisle_name] = [{'ing_qty': list_ingredient.mass_qty,
+                                       'ing_unit': list_ingredient.meas_unit,
+                                       'ing_name': list_ingredient.ingredient.ing_name}]
+
+        # Add list_key as key to grocery dict with aisles dict
+        grocery_dictionary[list_key] = aisles
+
+    return grocery_dictionary

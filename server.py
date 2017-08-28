@@ -188,12 +188,12 @@ def display_searchbox_and_list():
     """ Displays dashboard with recipe search + display list feature. """
 
     # Access all of current user's list names, returns a list of List objects
-    # Use relationships in jinja to access ingredient names, measurements,
-    # and units
-
     user_lists = helper_functions.load_user_lists(g.current_user)
 
-    return render_template("dashboard.html", user_lists=user_lists)
+    # Extract dictionary that contains all aisle info for all lists
+    grocery_list_info = helper_functions.load_aisles(user_lists)
+
+    return render_template("dashboard.html", grocery_list_info=grocery_list_info)
 
 
 @app.route("/new-list.json", methods=['POST'])
@@ -298,7 +298,6 @@ def process_add_to_list_button():
 
     # Check if recipe in DB. if not, add. In this process, the RecipeIngredient
     # table will be populated, allowing you to get relevant info.
-
     current_recipe = Recipe.query.filter(Recipe.recipe_id == recipe_id).first()
 
     if not current_recipe:
@@ -309,7 +308,6 @@ def process_add_to_list_button():
 
     # Create a dictionary that sends ingredient name, meas, and quant
     # back to ajax success function
-
     ingredient_info = {"list_ingredients": []}
 
     # FORMAT EXAMPLE:
