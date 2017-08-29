@@ -6,7 +6,7 @@ function DisplayUpdatedGroceryList(results) {
     // get listId so you can target specific grocery list div tag
     var listId = $("#list-activation-handler").val();
 
-    // create list of existing aisle ids (strings) represented as ul ids
+    // create list of existing list-aisle ids represented as ul ids
     var existingAisleIds = [];
 
     $('.grocery-list[data-list-id=' + listId + '] ul').each(function () {

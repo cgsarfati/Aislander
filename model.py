@@ -224,9 +224,93 @@ class RecipeCuisine(db.Model):
         return "<RecipeCuisine recipe_cuisine_id={} cuisine_id={} recipe_id={}>".format(
             self.recipe_cuisine_id, self.cuisine_id, self.recipe_id)
 
+##########################TESTING DATA###############################
+
+
+def example_data():
+    """ Create some sample data to test in tests.py file. Manually created
+        primary keys for auto-incrementing ones to ensure accuracy. """
+
+    # Add sample users
+    user1 = User(user_id=1, username='Bob', email='bob@gmail.com', password='Bobpw')
+    user2 = User(user_id=2, username='Jane', email='jane@gmail.com', password='Janepw')
+    user3 = User(user_id=3, username='Meg', email='meg@gmail.com', password='Megpw')
+
+    # Add sample recipes
+    recipe1 = Recipe(recipe_id=262682,
+                     recipe_name="Thai Sweet Potato Veggie Burgers with Spicy Peanut Sauce",
+                     img_url="thai-sweet-potato-veggie-burgers-with-spicy-peanut-sauce-262682.jpg",
+                     instructions='cook it')
+    recipe2 = Recipe(recipe_id=227961,
+                     recipe_name="Cajun Spiced Black Bean and Sweet Potato Burgers",
+                     img_url="Cajun-Spiced-Black-Bean-and-Sweet-Potato-Burgers-227961.jpg",
+                     instructions='bake it')
+    recipe3 = Recipe(recipe_id=602708,
+                     recipe_name="Meatless Monday: Grilled Portobello Mushroom Burgers with Romesco and Arugula",
+                     img_url="Meatless-Monday--Grilled-Portobello-Mushroom-Burgers-with-Romesco-and-Arugula-602708.jpg",
+                     instructions='mix it')
+
+    # Add sample ingredients
+    ingredient1 = Ingredient(ing_id=16058, ing_name="canned chickpeas", aisle_id=1)
+    ingredient2 = Ingredient(ing_id=1032028, ing_name="cajun spice", aisle_id=2)
+    ingredient3 = Ingredient(ing_id=11959, ing_name="baby arugula", aisle_id=3)
+
+    # Add sample grocery lists
+    list1 = List(list_id=1, user_id=1, list_name='Breakfast')
+    list2 = List(list_id=2, user_id=2, list_name='Lunch')
+    list3 = List(list_id=3, user_id=3, list_name='Dinner')
+
+    # Add sample cuisines from recipes
+    cuisine1 = Cuisine(cuisine_id=1, cuisine_name='chinese')
+    cuisine2 = Cuisine(cuisine_id=2, cuisine_name='american')
+
+    # Add sample aisles from ingredients
+    aisle1 = Aisle(aisle_id=1, aisle_name="Canned and Jarred")
+    aisle2 = Aisle(aisle_id=2, aisle_name="Ethnic Foods;Spices and Seasonings")
+    aisle3 = Aisle(aisle_id=3, aisle_name="Produce")
+
+    # Add sample ingredients of existing recipe
+    recipe_ingredient1 = RecipeIngredient(r_i_id=1, recipe_id=262682, ing_id=16058,
+                                          meas_unit="ounce", mass_qty=15)
+    recipe_ingredient2 = RecipeIngredient(r_i_id=2, recipe_id=227961, ing_id=1032028,
+                                          meas_unit="tsp", mass_qty=2)
+    recipe_ingredient3 = RecipeIngredient(r_i_id=3, recipe_id=602708, ing_id=11959,
+                                          meas_unit="handful", mass_qty=1)
+
+    # Add sample ingredients of existing list
+    list_ingredient1 = ListIngredient(l_i_id=1, list_id=1, ing_id=16058,
+                                      meas_unit="ounce", mass_qty=15)
+    list_ingredient2 = ListIngredient(l_i_id=2, list_id=2, ing_id=1032028,
+                                      meas_unit="tsp", mass_qty=2)
+    list_ingredient3 = ListIngredient(l_i_id=3, list_id=3, ing_id=11959,
+                                      meas_unit="handful", mass_qty=1)
+
+    # Add sample bookmarks
+    bookmark1 = Bookmark(bookmark_id=1, user_id=1, recipe_id=262682)
+    bookmark2 = Bookmark(bookmark_id=2, user_id=2, recipe_id=227961)
+    bookmark3 = Bookmark(bookmark_id=3, user_id=3, recipe_id=602708)
+
+    # Add sample cuisines of recipes
+    recipe_cuisine1 = RecipeCuisine(recipe_cuisine_id=1, cuisine_id=1,
+                                    recipe_id=262682)
+    recipe_cuisine2 = RecipeCuisine(recipe_cuisine_id=2, cuisine_id=2,
+                                    recipe_id=227961)
+    recipe_cuisine3 = RecipeCuisine(recipe_cuisine_id=2, cuisine_id=2,
+                                    recipe_id=602708)
+
+    # Add all info to fake db
+    db.session.add_all([user1, user2, user3, recipe1, recipe2, recipe3,
+                        ingredient1, ingredient2, ingredient3, list1, list2,
+                        list3, cuisine1, cuisine2, aisle1, aisle2,
+                        aisle3, recipe_ingredient1, recipe_ingredient2,
+                        recipe_ingredient3, list_ingredient1, list_ingredient2,
+                        list_ingredient3, bookmark1, bookmark2, bookmark3,
+                        recipe_cuisine1, recipe_cuisine2, recipe_cuisine3])
+    db.session.commit()
+
 
 #####################################################################
-# Helper functions
+
 
 def connect_to_db(app):
     """Connect the database to our Flask app."""
