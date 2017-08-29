@@ -16,7 +16,7 @@ function displayNewList(results) {
 
         // add new Div tag for that new list so that you can store
         // the grocery list of that list there.
-        var DivTag = "<div class='grocery-list' data-list-id='" + listId + "'>" + " </div>";
+        var DivTag = "<div class='grocery-list' id='" + listId + "' data-list-id='" + listId + "'>" + " </div>";
         $('#grocery-lists').append(DivTag);
 
     } // end conditional

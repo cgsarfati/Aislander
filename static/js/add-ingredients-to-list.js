@@ -3,16 +3,45 @@ function DisplayUpdatedGroceryList(results) {
     // rename data that you received back from server
     var ingredientInfo = results['list_ingredients'];
 
+    // get listId so you can target specific grocery list div tag
     var listId = $("#list-activation-handler").val();
 
-    for (var i = 0; i < ingredientInfo.length; i++) {
-        // unpack info and place inside grocery list span tag
-        var name = ingredientInfo[i]['ingredient']['name'];
-        var quantity = ingredientInfo[i]['mass_qty'];
-        var unit = ingredientInfo[i]['meas_unit'];
+    // create list of existing aisle ids (strings) represented as ul ids
+    var existingAisleIds = [];
 
-        $('div[data-list-id=' + listId + ']').append(String(quantity) + ' ' + unit + ' ' + name + '<br>');
-    }
+    $('.grocery-list[data-list-id=' + listId + '] ul').each(function () {
+        existingAisleIds.push(this.id);
+    });
+
+    console.log(existingAisleIds);
+
+    // loop through ingredients and append <li> ingredient to aisle
+    for (var i = 0; i < ingredientInfo.length; i++) {
+        var ingredientAisleId = ingredientInfo[i]['ingredient']['aisle_id'];
+        var ingredientAisleName = ingredientInfo[i]['ingredient']['aisle_name'];
+
+        // if <ul> aisle doesn't exist, add new <ul> aisle
+        if (existingAisleIds.indexOf(listId + "-" + ingredientAisleId) === -1) {
+            var newAisle = $("<ul>");
+            newAisle.attr("id", listId + "-" + ingredientAisleId);
+            newAisle.append(ingredientAisleName);
+            $('#' + listId).append(newAisle);
+            existingAisleIds.push(listId + "-" + ingredientAisleId);
+        }
+
+        // At this point, aisle exists. Create new <li> tag for each ingredient
+        // and append it to <ul> aisle.
+        var newItem = $("<li>");
+
+        var name = ingredientInfo[i]['ingredient']['name'];
+        var quantity = ingredientInfo[i]['mass_qty'] + " "; // integer
+        var unit = ingredientInfo[i]['meas_unit'] + " ";
+
+        newItem.append(String(quantity) + unit + name);
+
+        $("#" + listId + "-" + ingredientAisleId).append(newItem);
+
+    } // end loop
 
 } // end fn
 

@@ -32,10 +32,10 @@
   Current grocery list:
   <div id='grocery-lists'>
     {% for lst in grocery_list_info %}
-      <div class='grocery-list' data-list-id='{{ lst[0] }}'>
+      <div class='grocery-list' id='{{ lst[0] }}' data-list-id='{{ lst[0] }}'>
         {% for aisle in grocery_list_info[lst] %}
-          <div class='aisle' data-aisle-name='{{ aisle }}'> 
-            <ul> {{ aisle }} <ul>
+          <div class='aisle' data-aisle-name='{{ aisle[1] }}'> 
+            <ul id='{{lst[0]}}-{{aisle[0]}}'> {{ aisle[1] }}
               {% for ingredient in grocery_list_info[lst][aisle] %}
                 <li> {{ ingredient['ing_qty'] }} {{ ingredient['ing_unit'] }}
                 {{ ingredient['ing_name'] }} </li>

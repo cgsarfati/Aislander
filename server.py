@@ -317,18 +317,20 @@ def process_add_to_list_button():
     #                   'meas_unit': meas_unit,
     #                   'ingredient': {
     #                     'name': name,
-    #                     'aisle_name': aisle_name
+    #                     'aisle_name': aisle_name,
+    #                     'aisle_id': aisle_id
     #                     }
     #                   }
 
     for ingredient in list_ingredients:
         new_ingredient = {}
-        new_ingredient["mass_qty"] = ingredient.mass_qty
+        new_ingredient["mass_qty"] = ingredient.mass_qty  # integer
         new_ingredient["meas_unit"] = ingredient.meas_unit
 
         new_ingredient["ingredient"] = {}
         new_ingredient["ingredient"]["name"] = ingredient.ingredient.ing_name
         new_ingredient["ingredient"]["aisle_name"] = ingredient.ingredient.aisle.aisle_name
+        new_ingredient["ingredient"]["aisle_id"] = str(ingredient.ingredient.aisle.aisle_id)
 
         ingredient_info["list_ingredients"].append(new_ingredient)
 

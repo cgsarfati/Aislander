@@ -175,19 +175,19 @@ def load_aisles(user_lists):
     # Loop through each grocery list
     for user_list in user_lists:
         aisles = {}  # Will be populated with aisles and ingredients later
-        list_key = (user_list.list_id, user_list.list_name)  # Will add to dict at end once aisles dict fills up
+        list_key = (str(user_list.list_id), user_list.list_name)  # Will add to dict at end once aisles dict fills up
 
         for list_ingredient in user_list.list_ingredients:
-            aisle_name = list_ingredient.ingredient.aisle.aisle_name
+            aisle_key = (str(list_ingredient.ingredient.aisle.aisle_id), list_ingredient.ingredient.aisle.aisle_name)
             # If aisle exists, add to list. if not, create new aisle with new list
-            if aisle_name in aisles:
-                aisles[aisle_name].append({'ing_qty': list_ingredient.mass_qty,
-                                           'ing_unit': list_ingredient.meas_unit,
-                                           'ing_name': list_ingredient.ingredient.ing_name})
+            if aisle_key[1] in aisles:
+                aisles[aisle_key].append({'ing_qty': list_ingredient.mass_qty,
+                                          'ing_unit': list_ingredient.meas_unit,
+                                          'ing_name': list_ingredient.ingredient.ing_name})
             else:
-                aisles[aisle_name] = [{'ing_qty': list_ingredient.mass_qty,
-                                       'ing_unit': list_ingredient.meas_unit,
-                                       'ing_name': list_ingredient.ingredient.ing_name}]
+                aisles[aisle_key] = [{'ing_qty': list_ingredient.mass_qty,
+                                      'ing_unit': list_ingredient.meas_unit,
+                                      'ing_name': list_ingredient.ingredient.ing_name}]
 
         # Add list_key as key to grocery dict with aisles dict
         grocery_dictionary[list_key] = aisles
