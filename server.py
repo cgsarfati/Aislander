@@ -102,6 +102,13 @@ def process_registration_form():
     # Instantiate user
     # Refer to model.py for User table parameters
     # User_id will is autoincrementing, no need to specify it
+
+    username_exists = User.query.filter(User.username == username).first()
+
+    if username_exists:
+        flash("{} already taken. Try again!".format(username))
+        return redirect("/register")
+
     new_user = User(username=username, email=email, password=password)
 
     # Add user to database
