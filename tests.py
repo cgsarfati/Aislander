@@ -221,13 +221,115 @@ class FlaskTestsDashboard(TestCase):
         db.drop_all()
 
     def test_correct_info(self):
-        """ Test that what is supposed to show up in page is indeed showing. """
+        """ Test that what is supposed to show up in initial page is indeed showing. """
 
-########################## BOOKMARK FEATURE ###############################
+        result = self.client.get('/dashboard')
+        self.assertIn("Dashboard", result.data)
+        self.assertIn("Search recipe:", result.data)
+        self.assertIn("Create new list:", result.data)
+        self.assertIn("Current lists:", result.data)
+        self.assertIn("Current grocery list:", result.data)
+
+    def test_no_search_results(self):
+        """ Test that search results are not showing upon initial load. """
+
+        result = self.client.get('/dashboard')
+        self.assertNotIn("Bookmark", result.data)
+        self.assertNotIn("Add To List", result.data)
+
+########################## ADD NEW LIST FEATURE ###############################
+
+
+class FlaskTestsAddNewList(TestCase):
+    """Test add new list feature from server side."""
+
+    def setUp(self):
+        """Before every test"""
+
+        app.config['TESTING'] = True
+        self.client = app.test_client()
+
+        # Connect to test database
+        connect_to_db(app, "postgresql:///testdb")
+
+        # Create tables and add sample data
+        db.create_all()
+        example_data()
+
+        with self.client as c:
+            with c.session_transaction() as sess:
+                sess['user_id'] = 1
+
+    def tearDown(self):
+        """Do at end of every test."""
+
+        db.session.close()
+        db.drop_all()
+
+    def test_new_list(self):
+        """ Test successful dictionary if list does not exist. """
+
+        with self.client as c:
+            result = c.post('/new-list.json',
+                            data={'new_list_name': "Snack"},
+                            follow_redirects=True
+                            )
+
+            # Check for components in dictionary (list name, list, id)
+            self.assertIn("Snack", result.data)  # Check that list name is Snack
+            self.assertIn("4", result.data)  # Check that list id is 4
+
+    def test_list_already_exists(self):
+        """ Test that error message appears if user triesto add
+        already-existing list. """
+
+        with self.client as c:
+            result = c.post('/new-list.json',
+                            data={'new_list_name': "Breakfast"},
+                            follow_redirects=True
+                            )
+
+            self.assertIn("That list already exists. Try again!", result.data)
+
+########################## SEARCH FEATURE ###############################
+
+
+class FlaskTestsSearch(TestCase):
+    """Test search feature from server side."""
+
+    def setUp(self):
+        """Before every test"""
+
+        app.config['TESTING'] = True
+        self.client = app.test_client()
+
+        # Connect to test database
+        connect_to_db(app, "postgresql:///testdb")
+
+        # Create tables and add sample data
+        db.create_all()
+        example_data()
+
+        with self.client as c:
+            with c.session_transaction() as sess:
+                sess['user_id'] = 1
+
+    def tearDown(self):
+        """Do at end of every test."""
+
+        db.session.close()
+        db.drop_all()
+
+    def test_search_results(self):
+        """ Test that user is getting back search results. """
+
+        # DO MOCK API HERE
+
+########################### BOOKMARK FEATURE #################################
 
 
 class FlaskTestsBookmark(TestCase):
-    """Test bookmark feature."""
+    """Test bookmark feature from server side."""
 
     def setUp(self):
         """Before every test"""
@@ -298,6 +400,97 @@ class FlaskTestsBookmark(TestCase):
             # Check that bookmark does not get duplicated in DB
             current_bookmark = Bookmark.query.filter((Bookmark.recipe_id == '262682') & (Bookmark.user_id == 1)).count()
             self.assertEqual(1L, current_bookmark)
+
+########################## ADD TO LIST FEATURE ###############################
+
+
+class FlaskTestsAddIngredientsToList(TestCase):
+    """Test add-ingredients-to-list feature from server side."""
+
+    def setUp(self):
+        """Before every test"""
+
+        app.config['TESTING'] = True
+        self.client = app.test_client()
+
+        # Connect to test database
+        connect_to_db(app, "postgresql:///testdb")
+
+        # Create tables and add sample data
+        db.create_all()
+        example_data()
+
+        with self.client as c:
+            with c.session_transaction() as sess:
+                sess['user_id'] = 1
+
+    def tearDown(self):
+        """Do at end of every test."""
+
+        db.session.close()
+        db.drop_all()
+
+    def test_add_to_list_process(self):
+        """ Check that ajax success function is getting correct ingredient
+        information back to be displayed in grocery list. """
+
+        with self.client as c:
+            result = c.post('/add-to-list.json',
+                            data={'recipeId': '262682',
+                                  'listId': 1},
+                            follow_redirects=True
+                            )
+
+            self.assertIn('15', result.data)  # Mass qty
+            self.assertIn('ounce', result.data)  # Meas Unit
+            self.assertIn('canned chickpeas', result.data)  # Ing name
+            self.assertIn('Canned and Jarred', result.data)  # Aisle name
+            self.assertIn('1', result.data)  # Aisle id
+
+########################## RECIPE INFO PAGE ###############################
+
+
+class FlaskTestsRecipeInfo(TestCase):
+    """Test recipe info page."""
+
+    def setUp(self):
+        """Before every test"""
+
+        app.config['TESTING'] = True
+        self.client = app.test_client()
+
+        # Connect to test database
+        connect_to_db(app, "postgresql:///testdb")
+
+        # Create tables and add sample data
+        db.create_all()
+        example_data()
+
+        with self.client as c:
+            with c.session_transaction() as sess:
+                sess['user_id'] = 1
+
+    def tearDown(self):
+        """Do at end of every test."""
+
+        db.session.close()
+        db.drop_all()
+
+    def test_correct_layout(self):
+        """ Test that page displays name, cuisine, ingredients, and cooking
+        instructions. """
+
+        result = self.client.get('/recipe-info/262682')
+        self.assertIn("Name", result.data)
+        self.assertIn("Cuisine", result.data)
+        self.assertIn("Ingredients", result.data)
+        self.assertIn("Cooking instructions", result.data)
+
+    def test_correct_info(self):
+        """ Test that page displays correct name, img, cuisine, ingredients,
+        and cooking instructions information from Spoonacular API. """
+
+        # DO MOCK API HERE
 
 
 if __name__ == "__main__":

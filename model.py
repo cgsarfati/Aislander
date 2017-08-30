@@ -241,9 +241,9 @@ def example_data():
 
     # Add sample recipes
     recipe1 = Recipe(recipe_id='262682',
-                     recipe_name="Thai Sweet Potato",
-                     img_url="thai-sweet-spicy-peanut-sauce-262682.jpg",
-                     instructions='cook it')
+                     recipe_name="Thai Sweet Potato Veggie Burgers with Spicy Peanut Sauce",
+                     img_url="https://spoonacular.com/recipeImages/262682-556x370.jpg",
+                     instructions="Preheat the oven to 350F")
     recipe2 = Recipe(recipe_id='227961',
                      recipe_name="Cajun Spiced Black Bean and Sweet Potato Burgers",
                      img_url="Cajun-Spiced-Blao-Burgers-227961.jpg",
