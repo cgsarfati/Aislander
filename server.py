@@ -3,7 +3,7 @@
 # For using custom decorators
 from functools import wraps
 
-# Library for easy API calls
+# Library for API calls
 import requests
 
 # To Access OS environmental variables
@@ -20,7 +20,7 @@ from flask_debugtoolbar import DebugToolbarExtension
 from model import connect_to_db, db, User, Recipe, Ingredient, List, Cuisine
 from model import Aisle, RecipeIngredient, ListIngredient, Bookmark, RecipeCuisine
 
-# Import helper functions (query/add/delete from DB)
+# Import helper functions that handles SQLAlchemy queries
 import helper_functions
 
 app = Flask(__name__)
@@ -32,158 +32,128 @@ app.secret_key = "ABC"
 app.jinja_env.undefined = StrictUndefined
 
 
-#################### GLOBAL FUNCTIONS ####################
+#################### SETUP ####################
 
 @app.before_request
 def pre_process_all_requests():
-    """ Setup the request context. Current user info can now be accessed globally. """
+    """Setup the request context. Current user info can now be
+    accessed globally."""
 
-    # Get user info from session
-    user_id = session.get('user_id')
+    user_id = session.get('user_id')  # Get user id from session
 
-    # If exists, use it to grab user's info from DB. Save to g.current_user
+    # Grab user's info from DB using the id. Save to g.current_user
     if user_id:
         g.current_user = User.query.get(user_id)
-        # Use g.logged_in status for future conditionals in app routes
         g.logged_in = True
     else:
         g.logged_in = False
         g.current_user = None
 
 
-# custom decorator
+# Custom decorator
 def login_required(f):
     """ Redirects user to login page if trying to access a page that
     requires a logged in user."""
 
-    # Wraps gives ability to use @login_required under each app route
-    # that needs a logged in user
+    # Use @login_required wrap under each app route for pages that
+    # require a logged in user.
     @wraps(f)
     def decorated_function(*args, **kwargs):
         if g.current_user is None:
-            # Get url that corresponds to login_form html
-            return redirect(url_for('login_form', next=request.url))
+            # Get url that corresponds back to the login form
+            return redirect(url_for('/', next=request.url))
         return f(*args, **kwargs)
     return decorated_function
 
 
-# use API key
+# Component of Spoonacular API call
 headers = {"X-Mashape-Key": os.environ['RECIPE_CONSUMER_KEY'],
            "Accept": "application/json"}
 
 
-#################### HOMEPAGE ####################
+#################### HOMEPAGE - LOGIN/REGISTRATION ####################
 
 @app.route("/")
-def index():
-    """ Display homepage. """
+def display_homepage():
+    """ Display homepage with login and registration form. """
 
     return render_template("homepage.html")
 
 
-#################### REGISTRATION ####################
-
-@app.route("/register")
-def display_registration_form():
-    """ Display registration form. """
-
-    return render_template("register_form.html")
-
-
-@app.route("/register", methods=['POST'])
-def process_registration_form():
-    """ Add user info to database. Redirects back to homepage. """
-
-    # Get form data back from register_form.html
-    username = request.form["username"]
-    email = request.form["email"]
-    password = request.form["password"]
-
-    # Instantiate user
-    # Refer to model.py for User table parameters
-    # User_id will is autoincrementing, no need to specify it
-
-    username_exists = User.query.filter(User.username == username).first()
-
-    if username_exists:
-        flash("{} already taken. Try again!".format(username))
-        return redirect("/register")
-
-    new_user = User(username=username, email=email, password=password)
-
-    # Add user to database
-    db.session.add(new_user)
-    db.session.commit()
-
-    flash("Thanks for registering {}!".format(username))  # same as new_user.username
-
-    # Return to homepage. User now registered and can log in.
-    return redirect("/")
-
-
-#################### LOGIN/LOGOUT ####################
-
-@app.route("/login")
-def display_login_form():
-    """ Display login form. """
-
-    return render_template("login_form.html")
-
-
 @app.route("/login", methods=['POST'])
 def validate_login_info():
-    """ Attempt to log the user in by crossmatching with database. """
+    """Form validation regarding log in form. Redirects user to dashboard page
+    upon successful login."""
 
-    # Get form data back from login_form.html
+    # Get data back from login form
     username = request.form["username"]
     password = request.form["password"]
 
     # Check if user in database
-    # Use .first() --> gives back user object if exists. Nonetype if not.
-    user = User.query.filter(User.username == username).first()
+    existing_user = helper_functions.check_if_user_exists(username)
 
-    # Error messages
-    if not user:
+    # Form validation error messages
+    if not existing_user:
         flash("{} does not exist!".format(username))
-        return redirect("/login")
-    if user.password != password:
-        flash("Incorrect password")
-        return redirect("/login")
+        return redirect("/")
+    if existing_user.password != password:
+        flash("Incorrect password. Try again.")
+        return redirect("/")
 
-    # If successful, add user to session and go back to homepage.
-    session["user_id"] = user.user_id
-    flash("{} has successfully logged in.".format(user.username))
+    # If successful, add user to session and redirect to dashboard.
+    session["user_id"] = existing_user.user_id
+    flash("{} has successfully logged in.".format(existing_user.username))
     return redirect("/dashboard")
 
 
 @app.route("/logout")
 def logout_user():
-    """ Log out user. """
+    """Log out user."""
 
-    # Remove user from session (remember session info is user's PK not username!)
+    # Remove user from session when user clicks "logout" link
     del session["user_id"]
     flash("You have logged out.")
     return redirect("/")
 
 
+@app.route("/register", methods=['POST'])
+def process_registration_form():
+    """Add user info to database. Upon successful registration, logs user in
+    and redirects to dashboard page."""
+
+    # Get form data back from registration form
+    username = request.form["username"]
+    email = request.form["email"]
+    password = request.form["password"]
+
+    # Check if username already taken
+    username_exists = helper_functions.check_if_user_exists(username)
+
+    if username_exists:
+        flash("{} already taken. Try again!".format(username))
+        return redirect("/")
+
+    # Add user to DB, session (hence, logging user in), and redirect to dashboard.
+    new_user = helper_functions.add_user_to_db(username, email, password)
+    flash("Thanks for registering {}!".format(username))
+    session["user_id"] = new_user.user_id
+    return redirect("/dashboard")
+
+
 #################### USER PROFILE ####################
 
-@app.route("/users/<username>")
-def display_profile(username):
-    """ Show user profile."""
-
-    # Input of <username> is now the parameter for this function.
-    # Crossmatch with DB to find that particular user's info. Returns object.
-    user = User.query.filter(User.username == username).first()
+@app.route("/my-profile")
+def display_profile():
+    """ Show user's own profile."""
 
     # Load bookmarks
-    bookmarked_recipes = user.recipes  # a list of recipe objects
+    bookmarked_recipes = g.current_user.recipes  # a list of recipe objects
 
     # Load grocery lists
     user_lists = helper_functions.load_user_lists(g.current_user)
 
-    return render_template("user_profile.html", username=user.username,
-                           email=user.email, bookmarked_recipes=bookmarked_recipes,
+    return render_template("user_profile.html", username=g.current_user.username,
+                           email=g.current_user.email, bookmarked_recipes=bookmarked_recipes,
                            user_lists=user_lists)
 
 
@@ -376,6 +346,8 @@ if __name__ == "__main__":
     app.debug = True
 
     connect_to_db(app)
+
+    app.config["DEBUG_TB_INTERCEPT_REDIRECTS"] = False
 
     # Use the DebugToolbar
     DebugToolbarExtension(app)

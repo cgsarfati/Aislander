@@ -1,3 +1,5 @@
+""" SQL Alchemy queries used for Flask routes. """
+
 # Import model.py table definitions
 from model import connect_to_db, db, User, Recipe, Ingredient, List, Cuisine
 from model import Aisle, RecipeIngredient, ListIngredient, Bookmark, RecipeCuisine
@@ -11,6 +13,23 @@ import os
 # use API key
 headers = {"X-Mashape-Key": os.environ['RECIPE_CONSUMER_KEY'],
            "Accept": "application/json"}
+
+
+def check_if_user_exists(username):
+    """Checks if user exists in DB. If user exists, returns instantiated user
+    object. Returns none if user not found. """
+
+    return User.query.filter(User.username == username).first()
+
+
+def add_user_to_db(username, email, password):
+    """Adds user to Users table in DB. Returns instantiated user object."""
+
+    new_user = User(username=username, email=email, password=password)
+    db.session.add(new_user)
+    db.session.commit()
+
+    return new_user
 
 
 def add_recipe(recipe_id):

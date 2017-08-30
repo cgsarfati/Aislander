@@ -34,16 +34,16 @@ class FlaskTestsLogInLogOutRegistration(TestCase):
         db.session.close()
         db.drop_all()
 
-    def test_correct_login_page(self):
+    def test_login_form_display(self):
         """ Test that login page properly showing login form. """
 
-        result = self.client.get('/login')
+        result = self.client.get('/')
         self.assertIn("<h2> Login form </h2>", result.data)
 
-    def test_correct_registration_page(self):
+    def test_registration_form_display(self):
         """ That that registration page properly showing registration form. """
 
-        result = self.client.get('/register')
+        result = self.client.get('/')
         self.assertIn("<h2> Registration form </h2>", result.data)
 
     def test_correct_login(self):
@@ -79,7 +79,7 @@ class FlaskTestsLogInLogOutRegistration(TestCase):
                             follow_redirects=True
                             )
 
-            self.assertIn("Incorrect password", result.data)
+            self.assertIn("Incorrect password. Try again.", result.data)
 
     def test_logout(self):
         """Test logout route."""
@@ -162,7 +162,7 @@ class FlaskTestsUserProfile(TestCase):
     def test_correct_page(self):
         """ Test that correct page is showing up. """
 
-        result = self.client.get('/users/Bob')
+        result = self.client.get('/my-profile')
         self.assertIn("User Profile", result.data)
         self.assertNotIn("Dashboard", result.data)
         self.assertNotIn("Homepage", result.data)
@@ -173,21 +173,21 @@ class FlaskTestsUserProfile(TestCase):
     def test_correct_username(self):
         """ Test correct username is showing on the page. """
 
-        result = self.client.get('/users/Bob')
+        result = self.client.get('/my-profile')
         self.assertIn("Bob", result.data)
         self.assertNotIn("Jane", result.data)
 
     def test_correct_email(self):
         """ Test that correct email is showing on the page. """
 
-        result = self.client.get('/users/Bob')
+        result = self.client.get('/my-profile')
         self.assertIn("bob@gmail.com", result.data)
         self.assertNotIn("jane@gmail.com", result.data)
 
     def test_correct_bookmarks(self):
         """ Test that correct bookmarked recipes is showing on the page. """
 
-        result = self.client.get('/users/Bob')
+        result = self.client.get('/my-profile')
         self.assertIn("Thai Sweet Potato", result.data)
         self.assertNotIn("Meatless Burgers with Romesco and Arugula", result.data)
 
@@ -382,7 +382,7 @@ class FlaskTestsBookmark(TestCase):
             self.assertIn("This recipe has been bookmarked!", result.data)
 
             # Check that new bookmark now successfully added
-            current_bookmark = Bookmark.query.filter((Bookmark.recipe_id == '227961') & (Bookmark.user_id == 1)).one()
+            current_bookmark = Bookmark.query.filter((Bookmark.recipe_id == '227961') & (Bookmark.user_id == 1)).first()
             self.assertIsNotNone(current_bookmark)
 
     def test_existing_bookmark(self):

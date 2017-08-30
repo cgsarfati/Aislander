@@ -4,6 +4,28 @@
 
 {% block content %}
 
-HOMEPAGE CONTENT
+HOMEPAGE
+
+<div id='registration-form'>
+  <h2> Registration form </h2>
+
+  <form action="/register" method="POST">
+    Username <input type="text" name="username"> <br>
+    Email <input type="email" name="email"> <br>
+    Password <input type="password" name="password"> <br>
+    <input type="submit" value="Register">
+  </form>
+</div>
+
+
+<div id='login-form'>
+  <h2> Login form </h2>
+
+  <form action="/login" method="POST">
+    Username <input type="text" id="username" name="username"> <br>
+    Password <input type="password" id="password" name="password"> <br>
+    <input type="submit" id='submit-login' value="Login">
+  </form>
+</div>
 
 {% endblock %}

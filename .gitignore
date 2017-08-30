@@ -1,3 +1,7 @@
+phantom*
+.coverage
+ghostdriver*
+geckodriver*
 env/
 *.pyc
 secrets.sh
