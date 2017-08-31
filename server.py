@@ -13,7 +13,8 @@ import os
 from jinja2 import StrictUndefined
 
 # Import Flask web framework
-from flask import Flask, render_template, request, flash, redirect, session, g, url_for, jsonify
+from flask import Flask, render_template, request, flash, redirect, session, g
+from flask import url_for, jsonify
 from flask_debugtoolbar import DebugToolbarExtension
 
 # Import model.py table definitions
@@ -133,10 +134,12 @@ def process_registration_form():
         flash("{} already taken. Try again!".format(username))
         return redirect("/")
 
-    # Add user to DB, session (hence, logging user in), and redirect to dashboard.
+    # Add user to DB & session
     new_user = helper_functions.add_user_to_db(username, email, password)
     flash("Thanks for registering {}!".format(username))
     session["user_id"] = new_user.user_id
+
+    # Redirect to dashboard with newly logged-in user.
     return redirect("/dashboard")
 
 
@@ -144,17 +147,12 @@ def process_registration_form():
 
 @app.route("/my-profile")
 def display_profile():
-    """ Show user's own profile."""
+    """Display user profile of username, email, and bookmarked recipes."""
 
-    # Load bookmarks
-    bookmarked_recipes = g.current_user.recipes  # a list of recipe objects
-
-    # Load grocery lists
-    user_lists = helper_functions.load_user_lists(g.current_user)
-
-    return render_template("user_profile.html", username=g.current_user.username,
-                           email=g.current_user.email, bookmarked_recipes=bookmarked_recipes,
-                           user_lists=user_lists)
+    return render_template("user_profile.html",
+                           username=g.current_user.username,
+                           email=g.current_user.email,
+                           bookmarked_recipes=g.current_user.recipes)
 
 
 #################### DASHBOARD (RECIPE SEARCH/GROCERY LIST) ####################
@@ -162,75 +160,79 @@ def display_profile():
 @app.route("/dashboard")
 @login_required
 def display_searchbox_and_list():
-    """ Displays dashboard with recipe search + display list feature. """
+    """Displays initial dashboard with following features: recipe search form,
+    create new list form, and current grocery lists buttons."""
 
-    # Access all of current user's list names, returns a list of List objects
-    user_lists = helper_functions.load_user_lists(g.current_user)
+    # Extract dictionary that contains aisle information for all lists
+    grocery_list_info = helper_functions.load_aisles(g.current_user.lists)
 
-    # Extract dictionary that contains all aisle info for all lists
-    grocery_list_info = helper_functions.load_aisles(user_lists)
-
-    return render_template("dashboard.html", grocery_list_info=grocery_list_info)
+    return render_template("dashboard.html",
+                           grocery_list_info=grocery_list_info)
 
 
 @app.route("/new-list.json", methods=['POST'])
 @login_required
 def process_new_list():
-    """ Creates new grocery list that will be added to DB + displays in current
-    page without having to refresh. """
+    """Adds new grocery list to DB + displays in dashboard. If list already
+    exists, returns error message. Else, returns list info to AJAX success
+    function."""
 
-    # Unpack formInputs
+    # Unpack info from ajax
     new_list_name = request.form["new_list_name"]
 
-    # Pack up list info
-    list_info = [g.current_user.user_id, new_list_name]
-
     # Check if list already exists for particular user. If not, add.
-    current_list = List.query.filter((List.list_name == new_list_name) & (List.user_id == g.current_user.user_id)).first()
+    list_exists = helper_functions.check_if_list_exists(g.current_user.user_id,
+                                                        new_list_name)
 
-    if not current_list:
-        new_list = helper_functions.add_new_list(list_info)
+    if not list_exists:
+        new_list = helper_functions.add_new_list(g.current_user.user_id,
+                                                 new_list_name)
 
-        # Package up to have list id (for hidden data) + list name
-        # Need to be sent back to success function as dictionary
-        list_info = {'list_name': new_list.list_name, 'list_id': new_list.list_id}
+        # Package up for new-list.js ajax success fn
+        list_info = {'list_name': new_list.list_name,
+                     'list_id': new_list.list_id}
         return jsonify(list_info)
-    else:
-        # Throw error message if list already exists
-        error_message = "That list already exists. Try again!"
-        return error_message
+
+    # Return message to new-list.js ajax success fn
+    error_message = "That list already exists. Try again!"
+    return error_message
 
 
 @app.route("/search.json")
 @login_required
 def process_recipe_search():
-    """ Processes recipe search with Spoonacular API. """
+    """Processes recipe search, using Spoonacular API to access data."""
 
-    # Unpack formInputs
+    # Unpack info from ajax
     recipe_search = request.args["recipe_search"]
 
-    # Set up parameters for API call, then call API
+    # Set up parameters for API call, then call Spoonacular API
     payload = {'query': recipe_search, 'number': 5}
-    response = requests.get('https://spoonacular-recipe-food-nutrition-v1.p.mashape.com/recipes/search',
-                            params=payload, headers=headers)
+    spoonacular_endpoint = 'https://spoonacular-recipe-food-nutrition-v1.p.mashape.com/recipes/search'
+    response = requests.get(spoonacular_endpoint,
+                            params=payload,
+                            headers=headers)
 
-    # Store recipe info as json
+    # Store recipe info returned as json
     results_json = response.json()
 
-    # Append "summary" key from another json to results_json
+    # Combine 2 jsons together to be sent as one unified unit to ajax success fn
     for recipe in results_json['results']:
         recipe_id = str(recipe['id'])
-        summary_response = requests.get('https://spoonacular-recipe-food-nutrition-v1.p.mashape.com/recipes/' + recipe_id + '/summary',
-                                        headers=headers)
 
-        # Store as json and get summary key
+        # call Spoonacular API
+        summary_response = (requests.get('https://spoonacular-recipe-food-nutrition-v1.p.mashape.com/recipes/'
+                                         + recipe_id + '/summary',
+                                         headers=headers))
+
+        # Store info returned as json and isolate its "summary" info
         summary_json = summary_response.json()
         summary_text = summary_json['summary']
 
-        # Create new summary key to original json
+        # Append info to other json's recipes
         recipe['summary'] = summary_text
 
-    # Send json to search-result.js AJAX success function
+    # Return json to search-result.js ajax success function
     return jsonify(results_json)
 
 
@@ -239,29 +241,30 @@ def process_recipe_search():
 def process_recipe_bookmark_button():
     """ Adds recipe to DB, returns success message. """
 
-    # Unpack info from .js
+    # Unpack info from ajax
     recipe_id = request.form["recipe_id"]
 
-    # See if recipe in DB. If not, add new recipe to DB.
-    current_recipe = Recipe.query.filter(Recipe.recipe_id == recipe_id).first()
+    # Check if recipe in DB. If not, add new recipe to DB.
+    current_recipe = helper_functions.check_if_recipe_exists(recipe_id)
 
     if not current_recipe:
         current_recipe = helper_functions.add_recipe(recipe_id)
 
-    # Extract recipe_id and user_id to put into Bookmarks table in DB
-    bookmark_info = [g.current_user.user_id, current_recipe.recipe_id]
-
     # Check if user already bookmarked recipe. If not, add to DB.
-    current_bookmark = Bookmark.query.filter((Bookmark.recipe_id == current_recipe.recipe_id) & (Bookmark.user_id == g.current_user.user_id)).first()
+    bookmark_exists = (helper_functions
+                       .check_if_bookmark_exists(current_recipe.recipe_id,
+                                                 g.current_user.user_id))
 
-    if not current_bookmark:
-        helper_functions.add_bookmark(bookmark_info)
+    if not bookmark_exists:
+        helper_functions.add_bookmark(g.current_user.user_id,
+                                      current_recipe.recipe_id)
+        # Return success message to bookmark-recipe.js ajax success fn
         success_message = "This recipe has been bookmarked!"
         return success_message
-    else:
-        # Throw error message if bookmark already exists
-        error_message = "You've already bookmarked this recipe."
-        return error_message
+
+    # Return error message to bookmark-recipe.js ajax success fn
+    error_message = "You've already bookmarked this recipe."
+    return error_message
 
 
 @app.route("/add-to-list.json", methods=["POST"])

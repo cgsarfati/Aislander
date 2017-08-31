@@ -3,41 +3,45 @@ function displaySearchResults(results) {
     // get result key from json object, returns list
     var searchResults = results['results'];
 
-    // unpack json
+    // unpack list, accessing necessary info
     for (var i = 0; i < searchResults.length; i++) {
 
-        // format info into elements
+        // create div tag to serve as container for each recipe
         var beginDiv = "<div class='recipe'>";
         var endDiv = "</div>";
 
+        // create img
         var imgUrl = results['baseUri'] + searchResults[i]['image'];
         var img = "<img src=" + imgUrl + ">" + "<br>";
 
+        // create recipe title (as a link)
         var recipeId = String(searchResults[i]['id']);
 
         var title = "<a href='/recipe-info/" + recipeId + "'>" +
                      searchResults[i]['title'] + "</a>";
 
+        // create summary
         var summary = searchResults[i]['summary'] + "<br>";
 
+        // beside each recipe title, add two buttons: 'bookmark' and 'add to list'
         var bookmarkButton = "<button type='button' class='favorite' data-recipe-id='" + recipeId + "'>Bookmark</button>";
         var addButton = "<button type='button' class='add-to-list' data-recipe-id='" + recipeId + "'>Add To List</button> </br>";
         
-        // add all elements together; each recipe will have its own div
+        // add all elements together into recipe div element
         $('#recipes').append(beginDiv + title + bookmarkButton + addButton + img + summary + endDiv);
-    }
+    } // end loop
 
-}
+} // end fn
 
 function handleSearchResults(evt) {
     evt.preventDefault();
 
-    // package up form input values
+    // package up info from user input
     var formInputs = {
         "recipe_search": $("#recipe-search").val(),
     };
 
-    // send form to server, then perform success function
+    // send info to server
     $.get("/search.json", formInputs, displaySearchResults);
 }
 

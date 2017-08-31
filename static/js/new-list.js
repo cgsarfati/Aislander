@@ -3,19 +3,18 @@ function displayNewList(results) {
     // results either new list name (success) or error message (try again)
 
     if (results === "That list already exists. Try again!") {
-        // error message
         alert(results);
     } else {
         // unpack list info [name, id]
         var listName = results['list_name'];
         var listId = results['list_id'];
 
+        // create new grocery list button
         var listButton = "<button type='button' class='user-list' data-list-id='" + listId + "'>" + listName + "</button>";
-
         $('#user-lists').append(listButton + " | ");
 
-        // add new Div tag for that new list so that you can store
-        // the grocery list of that list there.
+        // add new Div tag for that list so you can access it when
+        // appending ingredients later
         var DivTag = "<div class='grocery-list' id='" + listId + "' data-list-id='" + listId + "'>" + " </div>";
         $('#grocery-lists').append(DivTag);
 
@@ -25,12 +24,12 @@ function displayNewList(results) {
 function handleCreateNewList(evt) {
     evt.preventDefault();
 
-    // package up form input values
+    // package up info from user input
     var formInputs = {
         "new_list_name": $("#new-list-name").val()
     };
 
-    // send form to server, then perform success function
+    // send info to server
     $.post("/new-list.json", formInputs, displayNewList);
 
 }
