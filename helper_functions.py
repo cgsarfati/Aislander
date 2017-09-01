@@ -69,7 +69,7 @@ def check_if_cuisine_exists(cuisine_name):
 def add_aisle(aisle_name):
     """Adds recipe's ingredient's aisle to Aisle table in DB."""
 
-    new_aisle = Aisle(aisle_name)
+    new_aisle = Aisle(aisle_name=aisle_name)
     db.session.add(new_aisle)
     db.session.commit()
 
@@ -111,13 +111,16 @@ def add_ingredients(recipe_id, ingredients_info):
             if not aisle_exists:
                 new_aisle = add_aisle(aisle_name)
                 new_ingredient.aisle_id = new_aisle.aisle_id
-
-            new_ingredient.aisle_id = aisle_exists.aisle_id
+            else:
+                new_ingredient.aisle_id = aisle_exists.aisle_id
 
             # At this point, new_ingredient should have an aisle_id
             # Add completed new_ingredient to DB
             db.session.add(new_ingredient)
+            print "added", ingredient_info['name']
             db.session.commit()
+        else:
+            print "not adding", ingredient_info['name']
 
         # Add to RecipeIngredient middle table
         add_recipe_ingredient(recipe_id, ingredient_id, ingredient_info['unit'],
@@ -153,6 +156,7 @@ def add_recipe(recipe_id):
     """ Adds recipe to Recipes table as well as appending its ingredients and
     cuisines to the Ingredient, Cuisine, and RecipeIngredient tables. """
 
+    print "adding recipe"
     # Get info from API and store as json
     info_response = requests.get(
         'https://spoonacular-recipe-food-nutrition-v1.p.mashape.com/recipes/'
@@ -178,7 +182,7 @@ def add_recipe(recipe_id):
     return new_recipe
 
 
-def add_user_to_db(username, email, password):
+def add_user(username, email, password):
     """Adds user to Users table in DB. Returns instantiated user object."""
 
     new_user = User(username=username, email=email, password=password)
@@ -211,7 +215,8 @@ def add_new_list(user_id, list_name):
 
 
 def add_to_list(recipe_id, list_id):
-    """ Adds recipe ingredients to ListIngredient table. """
+    """ Adds chosen recipe's ingredients to ListIngredient table in DB. Return
+    a list of ListIngredient objects. """
 
     # Get list of recipe_ingredient objects that have ing_ids, meas, and units
     recipe_ingredients = (RecipeIngredient.query
@@ -219,7 +224,7 @@ def add_to_list(recipe_id, list_id):
                           .all()
                           )
 
-    # This will be appended with new ListIngredient objects
+    # Create empty list, which will be appended with new ListIngredient objects
     updated_list_ingredients = []
 
     for recipe_ingredient in recipe_ingredients:

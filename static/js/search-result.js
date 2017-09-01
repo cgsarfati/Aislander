@@ -39,6 +39,7 @@ function handleSearchResults(evt) {
     // package up info from user input
     var formInputs = {
         "recipe_search": $("#recipe-search").val(),
+        "number_of_results": $("#search-quantity").val(),
     };
 
     // send info to server

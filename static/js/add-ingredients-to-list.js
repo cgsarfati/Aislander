@@ -13,8 +13,6 @@ function DisplayUpdatedGroceryList(results) {
         existingAisleIds.push(this.id);
     });
 
-    console.log(existingAisleIds);
-
     // loop through ingredients and append <li> ingredient to aisle
     for (var i = 0; i < ingredientInfo.length; i++) {
         var ingredientAisleId = ingredientInfo[i]['ingredient']['aisle_id'];

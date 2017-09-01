@@ -135,7 +135,7 @@ def process_registration_form():
         return redirect("/")
 
     # Add user to DB & session
-    new_user = helper_functions.add_user_to_db(username, email, password)
+    new_user = helper_functions.add_user(username, email, password)
     flash("Thanks for registering {}!".format(username))
     session["user_id"] = new_user.user_id
 
@@ -205,9 +205,10 @@ def process_recipe_search():
 
     # Unpack info from ajax
     recipe_search = request.args["recipe_search"]
+    number_of_results = request.args["number_of_results"]
 
     # Set up parameters for API call, then call Spoonacular API
-    payload = {'query': recipe_search, 'number': 5}
+    payload = {'query': recipe_search, 'number': number_of_results}
     spoonacular_endpoint = 'https://spoonacular-recipe-food-nutrition-v1.p.mashape.com/recipes/search'
     response = requests.get(spoonacular_endpoint,
                             params=payload,
@@ -239,7 +240,8 @@ def process_recipe_search():
 @app.route("/bookmark.json", methods=["POST"])
 @login_required
 def process_recipe_bookmark_button():
-    """ Adds recipe to DB, returns success message. """
+    """Adds bookmark to DB, returning either a success or error message
+    back to ajax success function."""
 
     # Unpack info from ajax
     recipe_id = request.form["recipe_id"]
@@ -272,13 +274,13 @@ def process_recipe_bookmark_button():
 def process_add_to_list_button():
     """ Adds recipe ingredients to ListIngredient table. """
 
+    print "Adding ingredients to grocery list... "
     # Unpack info from .js
     recipe_id = request.form['recipeId']
     list_id = request.form['listId']
 
-    # Check if recipe in DB. if not, add. In this process, the RecipeIngredient
-    # table will be populated, allowing you to get relevant info.
-    current_recipe = Recipe.query.filter(Recipe.recipe_id == recipe_id).first()
+    # Add recipe to DB if it does not already exist.
+    current_recipe = helper_functions.check_if_recipe_exists(recipe_id)
 
     if not current_recipe:
         current_recipe = helper_functions.add_recipe(recipe_id)
@@ -286,14 +288,15 @@ def process_add_to_list_button():
     # Add ingredients to current list, returns list of ListIngredient objects
     list_ingredients = helper_functions.add_to_list(recipe_id, list_id)
 
-    # Create a dictionary that sends ingredient name, meas, and quant
-    # back to ajax success function
+    # Construct a dictionary that sends ingredient name, meas, and quant
+    # back to ajax success fn
     ingredient_info = {"list_ingredients": []}
 
     # FORMAT EXAMPLE:
-    # per list item in ingredient_info above:
+    # per list item in dict above:
     #
-    # new_ingredient = {'mass_qty': mass_qty,
+    # new_ingredient = {
+    #                   'mass_qty': mass_qty,
     #                   'meas_unit': meas_unit,
     #                   'ingredient': {
     #                     'name': name,
@@ -309,8 +312,16 @@ def process_add_to_list_button():
 
         new_ingredient["ingredient"] = {}
         new_ingredient["ingredient"]["name"] = ingredient.ingredient.ing_name
-        new_ingredient["ingredient"]["aisle_name"] = ingredient.ingredient.aisle.aisle_name
-        new_ingredient["ingredient"]["aisle_id"] = str(ingredient.ingredient.aisle.aisle_id)
+        new_ingredient["ingredient"]["aisle_name"] = (ingredient
+                                                      .ingredient
+                                                      .aisle
+                                                      .aisle_name
+                                                      )
+        new_ingredient["ingredient"]["aisle_id"] = str(ingredient
+                                                       .ingredient
+                                                       .aisle
+                                                       .aisle_id
+                                                       )
 
         ingredient_info["list_ingredients"].append(new_ingredient)
 
