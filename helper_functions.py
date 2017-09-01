@@ -4,15 +4,8 @@
 from model import connect_to_db, db, User, Recipe, Ingredient, List, Cuisine
 from model import Aisle, RecipeIngredient, ListIngredient, Bookmark, RecipeCuisine
 
-# Library for easy API calls
-import requests
-
-# To Access OS environmental variables
-import os
-
-# use API key
-headers = {"X-Mashape-Key": os.environ['RECIPE_CONSUMER_KEY'],
-           "Accept": "application/json"}
+# Import file with all the Spoonacular API calls
+import api_calls
 
 
 def check_if_user_exists(username):
@@ -71,6 +64,7 @@ def add_aisle(aisle_name):
 
     new_aisle = Aisle(aisle_name=aisle_name)
     db.session.add(new_aisle)
+    print new_aisle.aisle_name, "added to Aisle table!"
     db.session.commit()
 
     return new_aisle
@@ -101,30 +95,45 @@ def add_ingredients(recipe_id, ingredients_info):
         ingredient_exists = check_if_ingredient_exists(ingredient_id)
 
         if not ingredient_exists:
+            print "THIS INGREDIENT DOES NOT EXIST IN INGREDIENT TABLE:", ingredient_info['name'], " **********"
             # create Ingredient object that may or may not have aisle id info
             new_ingredient = Ingredient(ing_id=ingredient_id,
                                         ing_name=ingredient_info['name'])
 
             aisle_name = ingredient_info['aisle']
+            print ingredient_info['name'], "'s aisle is", aisle_name
             aisle_exists = check_if_aisle_exists(aisle_name)
 
             if not aisle_exists:
+                print aisle_name, " does not exist in DB."
                 new_aisle = add_aisle(aisle_name)
                 new_ingredient.aisle_id = new_aisle.aisle_id
             else:
+                print aisle_name, " already exists in DB."
                 new_ingredient.aisle_id = aisle_exists.aisle_id
 
             # At this point, new_ingredient should have an aisle_id
             # Add completed new_ingredient to DB
             db.session.add(new_ingredient)
-            print "added", ingredient_info['name']
+            print new_ingredient.ing_name, "NOW ADDED TO INGREDIENTS TABLE! **********"
             db.session.commit()
-        else:
-            print "not adding", ingredient_info['name']
 
-        # Add to RecipeIngredient middle table
-        add_recipe_ingredient(recipe_id, ingredient_id, ingredient_info['unit'],
-                              ingredient_info['amount'])
+            # Add new ing to RecipeIngredient table
+            add_recipe_ingredient(recipe_id,
+                                  ingredient_id,
+                                  ingredient_info['unit'],
+                                  ingredient_info['amount'])
+            print new_ingredient.ing_name, "added to R-I table! (this is a new ing) ***********"
+        else:
+            # Add already-existing ing to RecipeIngredient table, since this is
+            # always going to be a new recipe (indicated in server.py conditional).
+            # This ing could already exist in DB due to past recipes using the
+            # same ingredient.
+            add_recipe_ingredient(recipe_id,
+                                  ingredient_id,
+                                  ingredient_info['unit'],
+                                  ingredient_info['amount'])
+            print ingredient_info['name'], "added to R-I table! (ing already existed) ************"
 
 
 def add_recipe_cuisine(cuisine_id, recipe_id):
@@ -147,34 +156,35 @@ def add_cuisines(recipe_id, cuisines):
             db.session.add(new_cuisine)
             db.session.commit()
             cuisine_id = new_cuisine.cuisine_id
-
-        cuisine_id = cuisine_exists.cuisine_id
+        else:
+            cuisine_id = cuisine_exists.cuisine_id
         add_recipe_cuisine(cuisine_id, recipe_id)
 
 
 def add_recipe(recipe_id):
-    """ Adds recipe to Recipes table as well as appending its ingredients and
-    cuisines to the Ingredient, Cuisine, and RecipeIngredient tables. """
+    """ Adds recipe to Recipes table, which also populates the following
+    tables: Ingredient, Aisle, Cuisine, RecipeIngredient. Returns new Recipe
+    object back to server."""
 
-    print "adding recipe"
     # Get info from API and store as json
-    info_response = requests.get(
-        'https://spoonacular-recipe-food-nutrition-v1.p.mashape.com/recipes/'
-        + recipe_id + '/information', headers=headers)
+    info_response = api_calls.recipe_info(recipe_id)
 
     new_recipe_json = info_response.json()
 
     # Add new recipe to DB
-    new_recipe = Recipe(recipe_id=recipe_id, recipe_name=new_recipe_json['title'],
+    new_recipe = Recipe(recipe_id=recipe_id,
+                        recipe_name=new_recipe_json['title'],
                         img_url=new_recipe_json['image'],
                         instructions=new_recipe_json['instructions'])
 
     db.session.add(new_recipe)
+    print "recipe added to DB. new recipe object:", new_recipe
     db.session.commit()
 
     # Isolate ingredients and cuisine info from dict to be added to DB.
     ingredients_info = new_recipe_json['extendedIngredients']
     add_ingredients(recipe_id, ingredients_info)
+    print "successfully added new ingredients to DB, and"
 
     cuisines = new_recipe_json['cuisines']
     add_cuisines(recipe_id, cuisines)
@@ -215,7 +225,7 @@ def add_new_list(user_id, list_name):
 
 
 def add_to_list(recipe_id, list_id):
-    """ Adds chosen recipe's ingredients to ListIngredient table in DB. Return
+    """ Add chosen recipe's ingredients to ListIngredient table in DB. Return
     a list of ListIngredient objects. """
 
     # Get list of recipe_ingredient objects that have ing_ids, meas, and units
@@ -223,6 +233,7 @@ def add_to_list(recipe_id, list_id):
                           .filter(RecipeIngredient.recipe_id == recipe_id)
                           .all()
                           )
+    print "this is a list of R-I objects that need to be added to L-I table:", recipe_ingredients
 
     # Create empty list, which will be appended with new ListIngredient objects
     updated_list_ingredients = []
@@ -233,10 +244,12 @@ def add_to_list(recipe_id, list_id):
                                             meas_unit=recipe_ingredient.meas_unit,
                                             mass_qty=recipe_ingredient.mass_qty)
         db.session.add(new_ListIngredient)
+        print "recipe-ingredient added to ListIngredient table!"
         db.session.commit()
         updated_list_ingredients.append(new_ListIngredient)
 
     # Return the list of ListIngredient objects
+    print "At this point. List-Ingredient table should be fully populated with that recipe's ingredients."
     return updated_list_ingredients
 
 
@@ -273,11 +286,13 @@ def load_aisles(user_lists):
                          list_ingredient.ingredient.aisle.aisle_name)
 
             # If aisle exists, add to list. If not, create a new aisle first.
-            if aisle_key[1] in aisles:
+            if aisle_key in aisles:
+                print aisle_key[1], " already exists! just appending to already existing list"
                 aisles[aisle_key].append({'ing_qty': list_ingredient.mass_qty,
                                           'ing_unit': list_ingredient.meas_unit,
                                           'ing_name': list_ingredient.ingredient.ing_name})
             else:
+                print aisle_key[1], " is new! lets create a new list"
                 aisles[aisle_key] = [{'ing_qty': list_ingredient.mass_qty,
                                       'ing_unit': list_ingredient.meas_unit,
                                       'ing_name': list_ingredient.ingredient.ing_name}]
@@ -285,5 +300,7 @@ def load_aisles(user_lists):
         # Populate empty aisles dict with info created above, attaching aisles
         # dict as the value to the grocery dict's key
         grocery_dictionary[list_key] = aisles
+
+        print grocery_dictionary
 
     return grocery_dictionary

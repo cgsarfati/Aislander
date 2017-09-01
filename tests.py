@@ -9,6 +9,9 @@ from model import connect_to_db, db, example_data, User, Bookmark
 from server import app
 from flask import session
 
+# import file with Spoonacular API calls to mock
+import api_calls
+
 
 ###################### LOG IN / LOG OUT / REGISTRATION ####################
 
@@ -94,7 +97,7 @@ class FlaskTestsLogInLogOutRegistration(TestCase):
             self.assertIn('You have logged out.', result.data)
 
     def test_registration_correct_info(self):
-        """ Test that user successfully registers upon form submission. """
+        """Test that user successfully registers upon form submission."""
 
         with self.client as c:
             result = c.post('/register',
@@ -112,7 +115,7 @@ class FlaskTestsLogInLogOutRegistration(TestCase):
             self.assertIsNotNone(current_user)
 
     def test_registration_incorrect_info(self):
-        """ Test that user gets error message upon already-taken username. """
+        """Test that user gets error message upon already-taken username."""
 
         with self.client as c:
             result = c.post('/register',
@@ -129,6 +132,14 @@ class FlaskTestsLogInLogOutRegistration(TestCase):
             # Check that info does not get stored in DB
             current_user = User.query.filter(User.username == 'Bob').count()
             self.assertNotEqual(2L, current_user)
+
+    def test_cannot_access_page(self):
+        """Test that @loginrequired wrapper works, where user cannot access
+        page that requires being logged in."""
+
+        result = self.client.get('/dashboard')
+
+        self.assertIn("Redirecting", result.data)
 
 
 ########################## USER PROFILE PAGE ###############################
@@ -491,6 +502,58 @@ class FlaskTestsRecipeInfo(TestCase):
         and cooking instructions information from Spoonacular API. """
 
         # DO MOCK API HERE
+
+
+########################### MOCK API #################################
+
+class MockFlaskTests(TestCase):
+    """Test routes that include a Spoonacular API call."""
+
+    def setUp(self):
+        """Before every test"""
+
+        app.config['TESTING'] = True
+        self.client = app.test_client()
+
+        # Connect to test database
+        connect_to_db(app, "postgresql:///testdb")
+
+        # Create tables and add sample data
+        db.create_all()
+        example_data()
+
+        with self.client as c:
+            with c.session_transaction() as sess:
+                sess['user_id'] = 1
+
+        # Make mock
+        def _mock_recipe_search():
+            """ Mocks info returned from Spoonacular API. """
+
+            api_calls.recipe_search = _mock_recipe_search
+
+        def _mock_summary_info():
+            """ Mocks info returned from Spoonacular API. """
+
+            api_calls.summary_info = _mock_summary_info
+
+        def _mock_recipe_info():
+            """ Mocks info returned from Spoonacular API. """
+
+            api_calls.recipe_info = _mock_recipe_info
+
+    def tearDown(self):
+        """Do at end of every test."""
+
+        db.session.close()
+        db.drop_all()
+
+    def test_search_results(self):
+        """ Test search results. """
+
+
+
+        
 
 
 if __name__ == "__main__":

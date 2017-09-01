@@ -3,12 +3,6 @@
 # For using custom decorators
 from functools import wraps
 
-# Library for API calls
-import requests
-
-# To Access OS environmental variables
-import os
-
 # Import web templating language
 from jinja2 import StrictUndefined
 
@@ -23,6 +17,8 @@ from model import Aisle, RecipeIngredient, ListIngredient, Bookmark, RecipeCuisi
 
 # Import helper functions that handles SQLAlchemy queries
 import helper_functions
+
+import api_calls
 
 app = Flask(__name__)
 
@@ -62,14 +58,9 @@ def login_required(f):
     def decorated_function(*args, **kwargs):
         if g.current_user is None:
             # Get url that corresponds back to the login form
-            return redirect(url_for('/', next=request.url))
+            return redirect(url_for('display_homepage', next=request.url))
         return f(*args, **kwargs)
     return decorated_function
-
-
-# Component of Spoonacular API call
-headers = {"X-Mashape-Key": os.environ['RECIPE_CONSUMER_KEY'],
-           "Accept": "application/json"}
 
 
 #################### HOMEPAGE - LOGIN/REGISTRATION ####################
@@ -207,12 +198,7 @@ def process_recipe_search():
     recipe_search = request.args["recipe_search"]
     number_of_results = request.args["number_of_results"]
 
-    # Set up parameters for API call, then call Spoonacular API
-    payload = {'query': recipe_search, 'number': number_of_results}
-    spoonacular_endpoint = 'https://spoonacular-recipe-food-nutrition-v1.p.mashape.com/recipes/search'
-    response = requests.get(spoonacular_endpoint,
-                            params=payload,
-                            headers=headers)
+    response = api_calls.recipe_search(recipe_search, number_of_results)
 
     # Store recipe info returned as json
     results_json = response.json()
@@ -221,10 +207,7 @@ def process_recipe_search():
     for recipe in results_json['results']:
         recipe_id = str(recipe['id'])
 
-        # call Spoonacular API
-        summary_response = (requests.get('https://spoonacular-recipe-food-nutrition-v1.p.mashape.com/recipes/'
-                                         + recipe_id + '/summary',
-                                         headers=headers))
+        summary_response = api_calls.summary_info(recipe_id)
 
         # Store info returned as json and isolate its "summary" info
         summary_json = summary_response.json()
@@ -274,19 +257,27 @@ def process_recipe_bookmark_button():
 def process_add_to_list_button():
     """ Adds recipe ingredients to ListIngredient table. """
 
-    print "Adding ingredients to grocery list... "
     # Unpack info from .js
     recipe_id = request.form['recipeId']
+
+    print "recipe id of this recipe:", recipe_id
+
     list_id = request.form['listId']
+
+    print "list id of the grocery list you're appending to:", list_id
 
     # Add recipe to DB if it does not already exist.
     current_recipe = helper_functions.check_if_recipe_exists(recipe_id)
 
     if not current_recipe:
+        print "this is a new recipe. heading to helper function now..."
         current_recipe = helper_functions.add_recipe(recipe_id)
+        print "new recipe added to DB!!!! Finally!!!"
+        print "now, need to add recipe_ingredients to list"
 
     # Add ingredients to current list, returns list of ListIngredient objects
     list_ingredients = helper_functions.add_to_list(recipe_id, list_id)
+    print list_ingredients, " is a list of ListIngredient objects to be displayed on page now."
 
     # Construct a dictionary that sends ingredient name, meas, and quant
     # back to ajax success fn
@@ -336,8 +327,7 @@ def display_recipe_info(recipe_id):
     """ Display detailed recipe info upon clicking on link. """
 
     # Call recipe info API feature (no payload required)
-    info_response = requests.get('https://spoonacular-recipe-food-nutrition-v1.p.mashape.com/recipes/' + recipe_id + '/information',
-                                 headers=headers)
+    info_response = api_calls.recipe_info(recipe_id)
 
     # Store into json format
     recipe_info_json = info_response.json()

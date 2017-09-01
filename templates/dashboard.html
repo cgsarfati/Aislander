@@ -4,21 +4,20 @@
 
 {% block content %}
 
-<h2> Dashboard </h2>
-
+<div class="container">
+  <h2> Dashboard </h2>
   <!-- RECIPE SEARCH FORM -->
   <form action="/dashboard.json" id="search-result">
     Search recipe: <input type="text" id="recipe-search" value="enter recipe name">
     <input type="number" id="search-quantity" value="10" min="1" max="20">
     <input type="submit" id="submit-search" value="submit">
-  </form> 
+  </form>
 
   <!-- CREATE NEW LIST -->
   <form action="/new-list.json" id="new-list">
     Create new list: <input type="text" value="Enter list name here" id="new-list-name">
     <input type="submit" value="submit">
-  </form> 
-
+  </form>
   <!-- DISPLAYS EXISTING LISTS -->
   Current lists: 
     <span id='user-lists'>

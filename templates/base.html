@@ -4,29 +4,44 @@
     <title> {% block title %} TITLE GOES HERE {% endblock %} </title>
     <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.js">
     </script>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
 </head>
 <body>
 
 <!-- NAVIGATION BAR --> <!-- NAVIGATION BAR --> 
-
-<!-- LOGIN/LOGOUT-->
-{% if "user_id" in session %}
-    <a href="/logout">Logout</a>
-{% else %}
-    <a href="/login">Login</a>
-    <a href="/register">Register</a>
-{% endif %}
-
-<!-- FLASH MESSAGE -->
-{% for flash in get_flashed_messages() %}
-  {{ flash }}
-{% endfor %}
-
-<!-- END NAVIGATION BAR --> <!-- END NAVIGATION BAR -->
+<nav class="navbar navbar-inverse">
+  <div class="container-fluid">
+    <div class="navbar-header">
+      <a class="navbar-brand active" href="/">GroceryListApp</a>
+    </div>
+    <ul class="nav navbar-nav">
+      <li><a href="/dashboard">Dashboard</a></li>
+      <li><a href="/my-profile">Profile</a></li>
+    </ul>
+      <form class="navbar-form navbar-left" role="search">
+        <div class="form-group">
+          <input type="text" class="form-control" placeholder="Search Recipe">
+        </div>
+        <button type="submit" class="btn btn-default">
+          <span class="glyphicon glyphicon-search"></span>
+        </button>
+      </form>
+    <ul class="nav navbar-nav navbar-right">
+      {% if "user_id" in session %}
+            <li> <a href="/"> <span class="glyphicon glyphicon-log-out"></span>Logout</a> </li>
+           {% else %}
+            <li> <a href="/"> <span class="glyphicon glyphicon-log-in"></span>Login</a> </li>
+            <li> <a href="/"> <span class="glyphicon glyphicon-user"> </span> Register</a> </li>
+      {% endif %}
+    </ul>
+  </div>
+</nav>
 
 <!-- CONTENT -->
-<hr>
-
 {% block content %}
     CONTENT GOES HERE
 {% endblock %}
