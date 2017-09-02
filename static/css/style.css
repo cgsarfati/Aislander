@@ -1,0 +1,23 @@
+/* Fixed navbar */
+body {
+    padding-top: 90px;
+}
+/* General sizing */
+ul.dropdown-lr {
+  width: 300px;
+}
+
+/* mobile fix */
+@media (max-width: 768px) {
+    .dropdown-lr {
+        color: #eee;
+    }
+    .dropdown-lr label {
+        color: #eee;
+    }
+}
+
+.alert {
+   width:70%;
+   margin: 0 auto;    
+}

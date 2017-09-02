@@ -25,13 +25,14 @@
     <div id="recipes"> </div> <br>
     </div>
 
-    <div class="col-md-6">
+  <div class="col-md-6">
 
     <!-- CREATE NEW LIST -->
       <form action="/new-list.json" id="new-list" class="text-center">
         Create New List: <input type="text" id="new-list-name">
         <button type="submit" value="submit"> <span class="glyphicon glyphicon-plus"></span></button>
       </form>
+
     <!-- DISPLAYS EXISTING LISTS -->
     <div class="btn-group text-center" role="group">
       <span id='user-lists'> <br>
@@ -42,6 +43,9 @@
       </span> <br>
 
       <input type='hidden' id='list-activation-handler' value='1'>
+
+      <!-- Status bar -->
+      <br> <br> <div id='status-alert'> </div>
 
     <!-- DISPLAYS CURRENT LIST'S INGREDIENTS -->
     <br> <h4 class="text-center"> Current Grocery List </h4> </p>
@@ -62,7 +66,7 @@
     </div>
 
   </div>
-  </div>
+</div>
 </div>
 
   <!-- IMPORT AJAX FILES -->
@@ -72,7 +76,5 @@
   <script src="/static/js/toggle-list-activation.js" type="text/javascript"></script>
   <script src="/static/js/add-ingredients-to-list.js" type="text/javascript"></script>
   <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
-
-
 
 {% endblock %}

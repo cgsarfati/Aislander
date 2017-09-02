@@ -269,7 +269,8 @@ def process_add_to_list_button():
 
     # Construct a dictionary that sends ingredient name, meas, and quant
     # back to ajax success fn
-    ingredient_info = {"list_ingredients": []}
+    ingredient_info = {"list_ingredients": [],
+                       "new_ing_count": len(list_ingredients)}
 
     # FORMAT EXAMPLE:
     # per list item in dict above:

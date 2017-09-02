@@ -6,6 +6,13 @@ function DisplayUpdatedGroceryList(results) {
     // get listId so you can target specific grocery list div tag
     var listId = $("#list-activation-handler").val();
 
+    // display success message with of ingredients added
+    var newStatus = "<div class='alert alert-success text-center' role='alert'>" +
+    "<button type='button' class='close' data-dismiss='alert' aria-label='Close'><span aria-hidden='true'>&times;</span></button>" +
+    "<strong> Success! </strong> " + results['new_ing_count'] + " ingredients added. </div>";
+
+    $('#status-alert').html(newStatus);
+
     // create list of existing list-aisle ids represented as ul ids
     var existingAisleIds = [];
 
