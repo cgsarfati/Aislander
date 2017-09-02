@@ -5,17 +5,21 @@
 {% block content %}
 
 <div class="container">
-<h2> User Profile </h2>
+  <div class="page-header">
+    <h2 class="text-center"> User Profile </h2>
+  </div>
 
 <!-- USER INFO -->
+<p class="text-center">
 Username: {{ username }} <br>
 
 Email: {{ email }} <br>
 
 <!-- BOOKMARK -->
-Bookmarked Recipes:
   {% for recipe in bookmarked_recipes %}
     <a href="/recipe-info/{{recipe.recipe_id}}"> {{ recipe.recipe_name }} </a>| 
   {% endfor %} <br>
+</p>
+</div>
 
 {% endblock %}

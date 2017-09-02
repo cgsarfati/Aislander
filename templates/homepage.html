@@ -4,28 +4,48 @@
 
 {% block content %}
 
-HOMEPAGE
-
-<div id='registration-form'>
-  <h2> Registration form </h2>
-
-  <form action="/register" method="POST">
-    Username <input type="text" name="username"> <br>
-    Email <input type="email" name="email"> <br>
-    Password <input type="password" name="password"> <br>
-    <input type="submit" value="Register">
-  </form>
+<div class="container">
+  <div class="page-header">
+    <h2 class="text-center"> Homepage </h2>
+  </div>
 </div>
 
+<div class="container text-center">
+  <li> {% for flash in get_flashed_messages() %}
+          <p class="navbar-text"> {{ flash }} </p>
+        {% endfor %}
+  </li>
+</div>
 
-<div id='login-form'>
-  <h2> Login form </h2>
+<div class="container">
+  <div class="row">
+    <div class="col-md-8">
+    image here
+    </div>
 
-  <form action="/login" method="POST">
-    Username <input type="text" id="username" name="username"> <br>
-    Password <input type="password" id="password" name="password"> <br>
-    <input type="submit" id='submit-login' value="Login">
-  </form>
+  <div class="col-md-4">
+    <div id='registration-form'>
+      <h2> Registration form </h2>
+
+      <form action="/register" method="POST">
+        Username <input type="text" name="username"> <br>
+        Email <input type="email" name="email"> <br>
+        Password <input type="password" name="password"> <br>
+        <input type="submit" value="Register">
+      </form>
+    </div>
+
+    <div id='login-form'>
+      <h2> Login form </h2>
+
+      <form action="/login" method="POST">
+        Username <input type="text" id="username" name="username"> <br>
+        Password <input type="password" id="password" name="password"> <br>
+        <input type="submit" id='submit-login' value="Login">
+      </form>
+    </div>
+  </div>
+  </div>
 </div>
 
 {% endblock %}

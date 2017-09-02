@@ -10,8 +10,8 @@ function displayNewList(results) {
         var listId = results['list_id'];
 
         // create new grocery list button
-        var listButton = "<button type='button' class='user-list' data-list-id='" + listId + "'>" + listName + "</button>";
-        $('#user-lists').append(listButton + " | ");
+        var listButton = "<button type='button' class='btn btn-default user-list' data-list-id='" + listId + "'>" + listName + "</button>";
+        $('#user-lists').append(listButton);
 
         // add new Div tag for that list so you can access it when
         // appending ingredients later

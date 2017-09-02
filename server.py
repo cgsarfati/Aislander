@@ -319,12 +319,11 @@ def display_recipe_info(recipe_id):
 
     # Unpack json
     title = recipe_info_json['title']
-    cuisines = recipe_info_json['cuisines']  # list
     img = recipe_info_json['image']
     ingredients = recipe_info_json['extendedIngredients']  # list
     cooking_instructions = recipe_info_json['instructions']
 
-    return render_template("recipe_info.html", title=title, cuisines=cuisines,
+    return render_template("recipe_info.html", title=title,
                            img=img, ingredients=ingredients,
                            cooking_instructions=cooking_instructions)
 

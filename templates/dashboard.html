@@ -5,43 +5,46 @@
 {% block content %}
 
 <div class="container">
-  <h2> Dashboard </h2>
+    <div class="page-header">
+      <h2 class="text-center"> Dashboard </h2>
+    </div>
+</div>
 
+<div class="container">
   <div class="row">
-
     <div class="col-md-6">
 
     <!-- RECIPE SEARCH FORM -->
-    <form action="/dashboard.json" id="search-result">
-      Search recipe: <input type="text" id="recipe-search" value="enter recipe name">
+    <form action="/dashboard.json" id="search-result" class="text-center">
+      Search Recipe: <input type="text" id="recipe-search">
       <input type="number" id="search-quantity" value="10" min="1" max="20">
-      <input type="submit" id="submit-search" value="submit">
+      <button type="submit" id="submit-search"> <span class="glyphicon glyphicon-search"></span></button>
     </form>
 
     <!-- RECIPE SEARCH RESULTS -->
     <div id="recipes"> </div> <br>
-
     </div>
 
     <div class="col-md-6">
 
     <!-- CREATE NEW LIST -->
-    <form action="/new-list.json" id="new-list">
-      Create new list: <input type="text" value="Enter list name here" id="new-list-name">
-      <input type="submit" value="submit">
-    </form>
+      <form action="/new-list.json" id="new-list" class="text-center">
+        Create New List: <input type="text" id="new-list-name">
+        <button type="submit" value="submit"> <span class="glyphicon glyphicon-plus"></span></button>
+      </form>
     <!-- DISPLAYS EXISTING LISTS -->
-    Current lists: 
-      <span id='user-lists'>
-        {% for lst in grocery_list_info %}
-          <button type='button' class='user-list' data-list-id='{{ lst[0] }}'> {{ lst[1] }} </button> |
-        {% endfor %} 
+    <div class="btn-group text-center" role="group">
+      <span id='user-lists'> <br>
+          {% for lst in grocery_list_info %}
+            <button type='button' class='btn btn-default user-list' data-list-id='{{ lst[0] }}'> {{ lst[1] }} </button>
+          {% endfor %} 
+    </div>
       </span> <br>
 
       <input type='hidden' id='list-activation-handler' value='1'>
 
     <!-- DISPLAYS CURRENT LIST'S INGREDIENTS -->
-    Current grocery list:
+    <br> <h4 class="text-center"> Current Grocery List </h4> </p>
     <div id='grocery-lists'>
       {% for lst in grocery_list_info %}
         <div class='grocery-list' id='{{ lst[0] }}' data-list-id='{{ lst[0] }}'>
@@ -68,6 +71,8 @@
   <script src="/static/js/new-list.js" type="text/javascript"></script>
   <script src="/static/js/toggle-list-activation.js" type="text/javascript"></script>
   <script src="/static/js/add-ingredients-to-list.js" type="text/javascript"></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+
 
 
 {% endblock %}

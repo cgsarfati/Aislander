@@ -7,25 +7,25 @@ function displaySearchResults(results) {
     for (var i = 0; i < searchResults.length; i++) {
 
         // create div tag to serve as container for each recipe
-        var beginDiv = "<div class='recipe'>";
+        var beginDiv = "<div class='recipe text-center'>";
         var endDiv = "</div>";
 
         // create img
         var imgUrl = results['baseUri'] + searchResults[i]['image'];
-        var img = "<img src=" + imgUrl + ">" + "<br>";
+        var img = "<img src=" + imgUrl + " class='img-rounded'>" + "<br>";
 
         // create recipe title (as a link)
         var recipeId = String(searchResults[i]['id']);
 
-        var title = "<a href='/recipe-info/" + recipeId + "'>" +
-                     searchResults[i]['title'] + "</a>";
+        var title = "<h3> <a href='/recipe-info/" + recipeId + "'>" +
+                     searchResults[i]['title'] + "</a> </h3>";
 
         // create summary
-        var summary = searchResults[i]['summary'] + "<br>";
+        var summary = "<p>" + searchResults[i]['summary'] + "</p> <br>";
 
         // beside each recipe title, add two buttons: 'bookmark' and 'add to list'
-        var bookmarkButton = "<button type='button' class='favorite' data-recipe-id='" + recipeId + "'>Bookmark</button>";
-        var addButton = "<button type='button' class='add-to-list' data-recipe-id='" + recipeId + "'>Add To List</button> </br>";
+        var bookmarkButton = "<button type='button' class='favorite' data-recipe-id='" + recipeId + "'> <span class='glyphicon glyphicon-heart'></span> </button>";
+        var addButton = "<button type='button' class='add-to-list' data-recipe-id='" + recipeId + "'> <span class='glyphicon glyphicon-shopping-cart'></span> </button> </br>";
         
         // add all elements together into recipe div element
         $('#recipes').append(beginDiv + title + bookmarkButton + addButton + img + summary + endDiv);

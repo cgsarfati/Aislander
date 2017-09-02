@@ -236,10 +236,9 @@ class FlaskTestsDashboard(TestCase):
 
         result = self.client.get('/dashboard')
         self.assertIn("Dashboard", result.data)
-        self.assertIn("Search recipe:", result.data)
-        self.assertIn("Create new list:", result.data)
-        self.assertIn("Current lists:", result.data)
-        self.assertIn("Current grocery list:", result.data)
+        self.assertIn("Search Recipe:", result.data)
+        self.assertIn("Create New List:", result.data)
+        self.assertIn("Current Grocery List", result.data)
 
     def test_no_search_results(self):
         """ Test that search results are not showing upon initial load. """
@@ -301,35 +300,6 @@ class FlaskTestsAddNewList(TestCase):
                             )
 
             self.assertIn("That list already exists. Try again!", result.data)
-
-########################## SEARCH FEATURE ###############################
-
-
-class FlaskTestsSearch(TestCase):
-    """Test search feature from server side."""
-
-    def setUp(self):
-        """Before every test"""
-
-        app.config['TESTING'] = True
-        self.client = app.test_client()
-
-        # Connect to test database
-        connect_to_db(app, "postgresql:///testdb")
-
-        # Create tables and add sample data
-        db.create_all()
-        example_data()
-
-        with self.client as c:
-            with c.session_transaction() as sess:
-                sess['user_id'] = 1
-
-    def tearDown(self):
-        """Do at end of every test."""
-
-        db.session.close()
-        db.drop_all()
 
 ########################### BOOKMARK FEATURE #################################
 
@@ -487,9 +457,8 @@ class FlaskTestsRecipeInfo(TestCase):
         instructions. """
 
         result = self.client.get('/recipe-info/262682')
-        self.assertIn("Cuisine", result.data)
         self.assertIn("Ingredients", result.data)
-        self.assertIn("Cooking instructions", result.data)
+        self.assertIn("Cooking Instructions", result.data)
 
 
 ########################### MOCK API #################################

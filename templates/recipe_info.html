@@ -5,25 +5,31 @@
 {% block content %}
 
 <div class="container">
-  <h2> {{ title }} </h2>
+  <div class="page-header">
+    <h2 class="text-center"> {{ title }} </h2>
+  </div>
+</div>
 
-  <img src={{ img }}> <br>
+<div class="container">
+  <div class="row">
+    <div class="col-md-6">
+      <img src={{ img }} style=" vertical-align:middle;"> <br>
+    </div>
 
-  <!-- CUISINE -->
-  <h5> Cuisines:</h5>
-  {% for cuisine in cuisines %}
-    {{ cuisine }} | 
-  {% endfor %} <br> <br>
+    <div class="col-md-6">
+      <!-- INGREDIENT LIST -->
+      <h5> Ingredients: </h5>
+      {% for ingredient in ingredients %}
+        {{ ingredient['originalString'] }} <br>
+      {% endfor %} <br>
+    </p>
+    </div>
+  </div>
+</div>
 
-  <!-- INGREDIENT LIST -->
-  <h5> Ingredients: </h5>
-  {% for ingredient in ingredients %}
-    {{ ingredient['originalString'] }} <br>
-  {% endfor %} <br>
-
+<div class="container">
   <!-- COOKING INSTRUCTIONS -->
-  <h5> Cooking instructions: </h5> {{ cooking_instructions }} <br> <br>
-
+  <h5 class="text-center"> Cooking Instructions </h5> {{ cooking_instructions }} <br> <br>
 </div>
 
 {% endblock %}
