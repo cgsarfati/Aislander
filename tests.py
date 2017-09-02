@@ -12,6 +12,8 @@ from flask import session
 # import file with Spoonacular API calls to mock
 import api_calls
 
+import fake_api_json
+
 
 ###################### LOG IN / LOG OUT / REGISTRATION ####################
 
@@ -171,32 +173,30 @@ class FlaskTestsUserProfile(TestCase):
         db.drop_all()
 
     def test_correct_page(self):
-        """ Test that correct page is showing up. """
+        """Test that correct page is showing up."""
 
         result = self.client.get('/my-profile')
         self.assertIn("User Profile", result.data)
-        self.assertNotIn("Dashboard", result.data)
-        self.assertNotIn("Homepage", result.data)
         self.assertNotIn("Recipe Info", result.data)
         self.assertNotIn("Login Form", result.data)
         self.assertNotIn("Registration Form", result.data)
 
     def test_correct_username(self):
-        """ Test correct username is showing on the page. """
+        """Test correct username is showing on the profile page."""
 
         result = self.client.get('/my-profile')
         self.assertIn("Bob", result.data)
         self.assertNotIn("Jane", result.data)
 
     def test_correct_email(self):
-        """ Test that correct email is showing on the page. """
+        """Test that correct email is showing on the profile page."""
 
         result = self.client.get('/my-profile')
         self.assertIn("bob@gmail.com", result.data)
         self.assertNotIn("jane@gmail.com", result.data)
 
     def test_correct_bookmarks(self):
-        """ Test that correct bookmarked recipes is showing on the page. """
+        """Test that correct bookmarked recipes is showing on the profile page."""
 
         result = self.client.get('/my-profile')
         self.assertIn("Thai Sweet Potato", result.data)
@@ -330,11 +330,6 @@ class FlaskTestsSearch(TestCase):
 
         db.session.close()
         db.drop_all()
-
-    def test_search_results(self):
-        """ Test that user is getting back search results. """
-
-        # DO MOCK API HERE
 
 ########################### BOOKMARK FEATURE #################################
 
@@ -492,16 +487,9 @@ class FlaskTestsRecipeInfo(TestCase):
         instructions. """
 
         result = self.client.get('/recipe-info/262682')
-        self.assertIn("Name", result.data)
         self.assertIn("Cuisine", result.data)
         self.assertIn("Ingredients", result.data)
         self.assertIn("Cooking instructions", result.data)
-
-    def test_correct_info(self):
-        """ Test that page displays correct name, img, cuisine, ingredients,
-        and cooking instructions information from Spoonacular API. """
-
-        # DO MOCK API HERE
 
 
 ########################### MOCK API #################################
@@ -527,20 +515,31 @@ class MockFlaskTests(TestCase):
                 sess['user_id'] = 1
 
         # Make mock
-        def _mock_recipe_search():
+        def _mock_recipe_search(search_name, recipe_id):
             """ Mocks info returned from Spoonacular API. """
 
-            api_calls.recipe_search = _mock_recipe_search
+            example_search = fake_api_json.recipe_search('pasta', 1)
 
-        def _mock_summary_info():
+            return example_search
+
+        def _mock_summary_info(recipe_id):
             """ Mocks info returned from Spoonacular API. """
 
-            api_calls.summary_info = _mock_summary_info
+            example_summary = fake_api_json.summary_info('548180')
 
-        def _mock_recipe_info():
+            return example_summary
+
+        def _mock_recipe_info(recipe_id):
             """ Mocks info returned from Spoonacular API. """
 
-            api_calls.recipe_info = _mock_recipe_info
+            example_info = fake_api_json.recipe_info('548180')
+
+            return example_info
+
+        # Attaches mocks calls to app's real calls
+        api_calls.recipe_search = _mock_recipe_search
+        api_calls.summary_info = _mock_summary_info
+        api_calls.recipe_info = _mock_recipe_info
 
     def tearDown(self):
         """Do at end of every test."""
@@ -549,12 +548,23 @@ class MockFlaskTests(TestCase):
         db.drop_all()
 
     def test_search_results(self):
-        """ Test search results. """
+        """Test accuracy of combining two jsons together from 2 API calls.
+        Particularly check if summary key was added to original json."""
 
+        results = self.client.get('/search.json', query_string={"recipe_search": "pasta",
+                                                                "number_of_results": 1})
 
+        self.assertIn("Italian Sausage Tortellini Soup", results.data)
+        self.assertIn('"summary": "Italian Sausage Tortellini Soup', results.data)
 
-        
+    def test_recipe_info_page(self):
+        """Test accuracy of API call into displaying correct info at
+        detailed recipe page."""
 
+        results = self.client.get("/recipe-info/'548180")
+
+        self.assertIn("Italian Sausage Tortellini Soup", results.data)
+        self.assertIn("Remove the bay leaf and serve", results.data)
 
 if __name__ == "__main__":
     import unittest

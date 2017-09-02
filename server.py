@@ -195,13 +195,10 @@ def process_recipe_search():
     """Processes recipe search, using Spoonacular API to access data."""
 
     # Unpack info from ajax
-    recipe_search = request.args["recipe_search"]
-    number_of_results = request.args["number_of_results"]
+    recipe_search = request.args.get("recipe_search")
+    number_of_results = request.args.get("number_of_results")
 
-    response = api_calls.recipe_search(recipe_search, number_of_results)
-
-    # Store recipe info returned as json
-    results_json = response.json()
+    results_json = api_calls.recipe_search(recipe_search, number_of_results)
 
     # Combine 2 jsons together to be sent as one unified unit to ajax success fn
     for recipe in results_json['results']:
@@ -210,7 +207,7 @@ def process_recipe_search():
         summary_response = api_calls.summary_info(recipe_id)
 
         # Store info returned as json and isolate its "summary" info
-        summary_json = summary_response.json()
+        summary_json = summary_response
         summary_text = summary_json['summary']
 
         # Append info to other json's recipes
@@ -259,25 +256,16 @@ def process_add_to_list_button():
 
     # Unpack info from .js
     recipe_id = request.form['recipeId']
-
-    print "recipe id of this recipe:", recipe_id
-
     list_id = request.form['listId']
-
-    print "list id of the grocery list you're appending to:", list_id
 
     # Add recipe to DB if it does not already exist.
     current_recipe = helper_functions.check_if_recipe_exists(recipe_id)
 
     if not current_recipe:
-        print "this is a new recipe. heading to helper function now..."
         current_recipe = helper_functions.add_recipe(recipe_id)
-        print "new recipe added to DB!!!! Finally!!!"
-        print "now, need to add recipe_ingredients to list"
 
     # Add ingredients to current list, returns list of ListIngredient objects
     list_ingredients = helper_functions.add_to_list(recipe_id, list_id)
-    print list_ingredients, " is a list of ListIngredient objects to be displayed on page now."
 
     # Construct a dictionary that sends ingredient name, meas, and quant
     # back to ajax success fn
@@ -327,10 +315,7 @@ def display_recipe_info(recipe_id):
     """ Display detailed recipe info upon clicking on link. """
 
     # Call recipe info API feature (no payload required)
-    info_response = api_calls.recipe_info(recipe_id)
-
-    # Store into json format
-    recipe_info_json = info_response.json()
+    recipe_info_json = api_calls.recipe_info(recipe_id)
 
     # Unpack json
     title = recipe_info_json['title']

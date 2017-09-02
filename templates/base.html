@@ -41,6 +41,10 @@
   </div>
 </nav>
 
+{% for flash in get_flashed_messages() %}
+  {{ flash }}
+{% endfor %} <br>
+
 <!-- CONTENT -->
 {% block content %}
     CONTENT GOES HERE

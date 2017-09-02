@@ -4,24 +4,26 @@
 
 {% block content %}
 
-  <!-- NAME + IMG + ADD RECIPE BUTTON + BOOKMARK BUTTON -->
-  Name: {{ title }} <br>
+<div class="container">
+  <h2> {{ title }} </h2>
 
   <img src={{ img }}> <br>
 
   <!-- CUISINE -->
-  Cuisine:
+  <h5> Cuisines:</h5>
   {% for cuisine in cuisines %}
     {{ cuisine }} | 
   {% endfor %} <br> <br>
 
   <!-- INGREDIENT LIST -->
-  Ingredients: <br>
+  <h5> Ingredients: </h5>
   {% for ingredient in ingredients %}
     {{ ingredient['originalString'] }} <br>
   {% endfor %} <br>
 
   <!-- COOKING INSTRUCTIONS -->
-  Cooking instructions: {{ cooking_instructions }} <br> <br>
+  <h5> Cooking instructions: </h5> {{ cooking_instructions }} <br> <br>
+
+</div>
 
 {% endblock %}

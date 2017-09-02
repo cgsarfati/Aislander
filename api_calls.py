@@ -18,7 +18,7 @@ def recipe_search(recipe_search, number_of_results):
                             params=payload,
                             headers=headers)
 
-    return response
+    return response.json()
 
 
 def summary_info(recipe_id):
@@ -29,7 +29,7 @@ def summary_info(recipe_id):
                                      + recipe_id + '/summary',
                                      headers=headers))
 
-    return summary_response
+    return summary_response.json()
 
 
 def recipe_info(recipe_id):
@@ -40,4 +40,4 @@ def recipe_info(recipe_id):
         'https://spoonacular-recipe-food-nutrition-v1.p.mashape.com/recipes/'
         + recipe_id + '/information', headers=headers)
 
-    return info_response
+    return info_response.json()
