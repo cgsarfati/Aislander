@@ -17,7 +17,7 @@ function displaySearchResults(results) {
         // create recipe title (as a link)
         var recipeId = String(searchResults[i]['id']);
 
-        var title = "<h3> <a href='/recipe-info/" + recipeId + "'>" +
+        var title = "<h3 class='recipe-title' data-recipe-id='" + recipeId + "'> <a href='/recipe-info/" + recipeId + "'>" +
                      searchResults[i]['title'] + "</a> </h3>";
 
         // create summary
@@ -30,6 +30,10 @@ function displaySearchResults(results) {
         // add all elements together into recipe div element
         $('#recipes').append(beginDiv + title + bookmarkButton + addButton + img + summary + endDiv);
     } // end loop
+
+    // Update progress bar
+    $('.progress-status').html('Step 4: Click the shopping cart icon to add ingredients to your list!');
+    $("#progress-bar").attr("style", "width:75%");
 
 } // end fn
 

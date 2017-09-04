@@ -11,6 +11,10 @@ function changeListStatus(evt) {
     $(".grocery-list").hide();
     $('div[data-list-id=' + listId + ']').show();
 
+    // Update progress bar
+    $('.progress-status').html('Step 3: Search for recipes');
+    $("#progress-bar").attr("style", "width:50%");
+
 } // end fn
 
 // event listener for isolating lists

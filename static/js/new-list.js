@@ -19,6 +19,10 @@ function displayNewList(results) {
         $('#grocery-lists').append(DivTag);
 
     } // end conditional
+
+    // Update progress bar
+    $('.progress-status').html('Step 2: Choose a grocery list');
+    $("#progress-bar").attr("style", "width:25%");
 } // end fn
 
 function handleCreateNewList(evt) {

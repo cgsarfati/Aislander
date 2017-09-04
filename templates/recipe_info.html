@@ -6,7 +6,10 @@
 
 <div class="container">
   <div class="page-header">
-    <h2 class="text-center"> {{ title }} </h2>
+    <h2 class="text-center"> {{ title }} </h2> 
+    <button onclick="goBack()">
+      <span class='glyphicon glyphicon-chevron-left'></span>
+    </button> 
   </div>
 </div>
 
@@ -22,7 +25,6 @@
       {% for ingredient in ingredients %}
         {{ ingredient['originalString'] }} <br>
       {% endfor %} <br>
-    </p>
     </div>
   </div>
 </div>
@@ -31,5 +33,12 @@
   <!-- COOKING INSTRUCTIONS -->
   <h5 class="text-center"> Cooking Instructions </h5> {{ cooking_instructions }} <br> <br>
 </div>
+
+<!-- JAVASCRIPT -->
+<script>
+  function goBack() {
+    window.history.back();
+  }
+</script>
 
 {% endblock %}

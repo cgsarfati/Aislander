@@ -43,13 +43,13 @@ class FlaskTestsLogInLogOutRegistration(TestCase):
         """ Test that login page properly showing login form. """
 
         result = self.client.get('/')
-        self.assertIn("<h2> Login form </h2>", result.data)
+        self.assertIn("Log In", result.data)
 
     def test_registration_form_display(self):
         """ That that registration page properly showing registration form. """
 
         result = self.client.get('/')
-        self.assertIn("<h2> Registration form </h2>", result.data)
+        self.assertIn("Register", result.data)
 
     def test_correct_login(self):
         """Test log in form with correct info."""

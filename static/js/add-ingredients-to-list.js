@@ -48,6 +48,11 @@ function DisplayUpdatedGroceryList(results) {
 
     } // end loop
 
+    // Update progress bar
+    $('.progress-status').html("Success! Off to the grocery store you go!");
+    $("#progress-bar").attr("style", "width:100%");
+    $('#progress-bar').addClass('progress-bar-success');
+
 } // end fn
 
 function handleAddIngredientsToList(evt) {

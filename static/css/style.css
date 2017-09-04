@@ -2,9 +2,41 @@
 body {
     padding-top: 90px;
 }
+
 /* General sizing */
 ul.dropdown-lr {
   width: 300px;
+}
+
+#homepage-img {
+  filter: opacity(.95);
+}
+
+#services {
+  margin-top:35em;
+}
+
+.service-heading {
+  color: #D5D5D5;
+}
+
+.service-text {
+  color: #D5D5D5;
+}
+
+span.homepage.glyphicon-search {
+  font-size: 2em;
+  color: #D5D5D5;
+}
+
+span.homepage.glyphicon-shopping-cart {
+  font-size: 2em;
+  color: #D5D5D5;
+}
+
+span.homepage.glyphicon-heart {
+  font-size: 2em;
+  color: #D5D5D5;
 }
 
 /* mobile fix */
@@ -20,4 +52,31 @@ ul.dropdown-lr {
 .alert {
    width:70%;
    margin: 0 auto;    
+}
+
+.img-rounded {
+    width:70%;
+}
+
+#text-title {
+  z-index: 100;
+  position: absolute;
+  color: #F8EEE7;
+  font-size: 70px;
+  font-family: 'Kaushan Script', cursive;
+  left: 150px;
+  top: 150px;
+}
+
+#text-caption {
+  z-index: 100;
+  position: absolute;
+  color: white;
+  font-size: 20px;
+  left: 150px;
+  top: 250px;
+}
+
+.carousel-image {
+  margin: auto;
 }

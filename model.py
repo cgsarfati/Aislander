@@ -35,8 +35,8 @@ class Recipe(db.Model):
 
     # Recipe_id the actual Spoonacular recipe_id; not auto-incrementing
     recipe_id = db.Column(db.String(64), nullable=False, primary_key=True)
-    recipe_name = db.Column(db.String(64), nullable=False)
-    img_url = db.Column(db.String(200), nullable=True)
+    recipe_name = db.Column(db.String(200), nullable=False)
+    img_url = db.Column(db.String(1000), nullable=True)
     instructions = db.Column(db.String(10000), nullable=True)
 
     # Define relationships to cuisines (ASSOCIATION)

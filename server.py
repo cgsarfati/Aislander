@@ -137,6 +137,7 @@ def process_registration_form():
 #################### USER PROFILE ####################
 
 @app.route("/my-profile")
+@login_required
 def display_profile():
     """Display user profile of username, email, and bookmarked recipes."""
 
@@ -144,6 +145,25 @@ def display_profile():
                            username=g.current_user.username,
                            email=g.current_user.email,
                            bookmarked_recipes=g.current_user.recipes)
+
+
+@app.route("/bookmark-carousel.json")
+@login_required
+def process_bookmark_images():
+    """Get all bookmark images from DB."""
+
+    # Extract list of recipes from DB
+    bookmarked_recipes = g.current_user.recipes
+
+    # Create dictionary of recipe image links
+    bookmark_images = {'images': []}
+
+    for recipe in bookmarked_recipes:
+        bookmark_images['images'].append(recipe.img_url)
+
+    print bookmark_images
+
+    return jsonify(bookmark_images)
 
 
 #################### DASHBOARD (RECIPE SEARCH/GROCERY LIST) ####################
