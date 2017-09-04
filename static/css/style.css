@@ -58,6 +58,10 @@ span.homepage.glyphicon-heart {
     width:70%;
 }
 
+.buttonload {
+  border-radius: 24px;
+}
+
 #text-title {
   z-index: 100;
   position: absolute;

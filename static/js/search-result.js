@@ -1,7 +1,7 @@
 function displaySearchResults(results) {
 
     $("#recipes").empty();
-    
+
     // get result key from json object, returns list
     var searchResults = results['results'];
 
@@ -40,7 +40,7 @@ function displaySearchResults(results) {
 } // end fn
 
 function handleSearchResults(evt) {
-    $("#recipes").html("<button class='buttonload'><i class='fa fa-spinner fa-spin'></i>Looking for recipes...</button>");
+    $("#recipes").html("<button class='buttonload'><i class='fa fa-spinner fa-spin'></i> Looking for recipes...</button>");
 
     evt.preventDefault();
 

@@ -12,6 +12,7 @@ function DisplayUpdatedGroceryList(results) {
     "<strong> Success! </strong> " + results['new_ing_count'] + " ingredients added. </div>";
 
     $('#status-alert').html(newStatus);
+    $('#status-alert').delay(5000).fadeOut();
 
     // create list of existing list-aisle ids represented as ul ids
     var existingAisleIds = [];
