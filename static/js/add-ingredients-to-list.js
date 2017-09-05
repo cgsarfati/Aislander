@@ -50,7 +50,7 @@ function DisplayUpdatedGroceryList(results) {
     } // end loop
 
     // Update progress bar
-    $('.progress-status').html("Success! Off to the grocery store you go!");
+    $('.progress-status').html("Success! Off to the grocery store you go! Or add more recipes!");
     $("#progress-bar").attr("style", "width:100%");
     $('#progress-bar').addClass('progress-bar-success');
 

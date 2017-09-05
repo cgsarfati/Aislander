@@ -9,7 +9,7 @@ ul.dropdown-lr {
 }
 
 #homepage-img {
-  filter: opacity(.95);
+  filter: brightness(70%);
 }
 
 #services {
