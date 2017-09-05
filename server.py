@@ -359,6 +359,6 @@ if __name__ == "__main__":
     app.config["DEBUG_TB_INTERCEPT_REDIRECTS"] = False
 
     # Use the DebugToolbar
-    DebugToolbarExtension(app)
+    # DebugToolbarExtension(app)
 
     app.run(host="0.0.0.0")
