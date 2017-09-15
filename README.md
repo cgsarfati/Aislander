@@ -18,12 +18,23 @@ Aislander is intended to automate a task we all spend too much time on: manually
 * API: Spoonacular API
 
 ## Features
-* Users can log in or register in the homepage, where the data is stored to the PostgreSQL database.
-* Once a user is logged in, it will lead to the dashboard page, where users can create grocery lists, and access previously saved ones. There is also a progress bar on top, guiding users via a step-by-step tutorial.
-* Users can also search for recipes, where this app sends calls to the Spoonacular API to access recipe data. A loading button is installed to provide some user feedback.
-* If users want to append a recipe's ingredients into a grocery list, they can click the shopping cart button. The grocery list is organized by aisle categories, saving users from scavenger hunting in grocery stores.
-* When adding additional recipes, ingredients either append to existing aisles, or creating a new aisle in the process.
-* Lastly, users can bookmark recipes, which can be accessed in their profile page. The profile page includes user info as well as a carousel of the bookmarked recipes' images.
+![Homepage](https://raw.githubusercontent.com/cgsarfati/hb-grocery-app/master/static/img/Login.gif)
+Users can log in or register in the homepage, where the data is stored to the PostgreSQL database.
+
+![Homepage](https://raw.githubusercontent.com/cgsarfati/hb-grocery-app/master/static/img/AddToggleList.gif)
+Once a user is logged in, it will lead to the dashboard page, where users can create grocery lists, and access previously saved ones. There is also a progress bar on top, guiding users via a step-by-step tutorial.
+
+![Homepage](https://raw.githubusercontent.com/cgsarfati/hb-grocery-app/master/static/img/Search.gif)
+Users can also search for recipes, where this app sends calls to the Spoonacular API to access recipe data. A loading button is installed to provide some user feedback.
+
+![Homepage](https://raw.githubusercontent.com/cgsarfati/hb-grocery-app/master/static/img/AddRecipe.gif)
+If users want to append a recipe's ingredients into a grocery list, they can click the shopping cart button. The grocery list is organized by aisle categories, saving users from scavenger hunting in grocery stores.
+
+![Homepage](https://raw.githubusercontent.com/cgsarfati/hb-grocery-app/master/static/img/AddAnotherRecipe.gif)
+When adding additional recipes, ingredients either append to existing aisles, or creating a new aisle in the process.
+
+![Homepage](https://raw.githubusercontent.com/cgsarfati/hb-grocery-app/master/static/img/Bookmark.gif)
+Lastly, users can bookmark recipes, which can be accessed in their profile page. The profile page includes user info as well as a carousel of the bookmarked recipes' images.
 
 ## Installation
 
