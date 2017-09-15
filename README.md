@@ -8,7 +8,7 @@ Aislander is intended to automate a task we all spend too much time on: manually
 * [Technologies](#technologies)
 * [Features](#features)
 * [Installation](#installation)
-* [Future Features](#future features)
+* [Future Features](#future-features)
 * [Author](#author)
 
 ## Technologies
@@ -87,7 +87,7 @@ python server.py
 
 You can now navigate to 'localhost:5000/' to start exploring Aislander. Happy grocery listing!
 
-## Future Features
+## Future-Features
 * Repeating ingredients will increment in measurement values rather than duplicating.
 * Users can access the recipes included in each grocery list.
 * A grocery store locator feature using the GoogleMaps API where users can locate the nearest grocery stores based on their current location that has all the ingredients in the store inventory.
