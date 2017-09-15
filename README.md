@@ -7,7 +7,8 @@ Aislander is intended to automate a task we all spend too much time on: manually
 ## Table of Contents
 * [Technologies](#technologies)
 * [Features](#features)
-* [Future Features](#future)
+* [Installation](#installation)
+* [Future Features](#future features)
 * [Author](#author)
 
 ## Technologies
@@ -21,6 +22,70 @@ Aislander is intended to automate a task we all spend too much time on: manually
 * Users can also search for recipes, and append those recipes' ingredients into one grocery list with a single click of a button.
 * The grocery list is organized by aisle categories, saving users from scavenger hunting in grocery stores.
 * Users can also bookmark recipes, which can be accessed in their profile page, and create many grocery lists, intended for meal planning purposes.
+
+## Installation
+
+To run Aislander:
+
+Install PostgreSQL (Mac OSX)
+
+Clone or fork this repo:
+
+```
+https://github.com/cgsarfati/hb-grocery-app.git
+```
+
+To have this app running on your local computer:
+Create and activate a virtual environment inside your ChefBox directory:
+
+```
+virtualenv env
+source env/bin/activate
+```
+
+Install the dependencies:
+
+```
+pip install -r requirements.txt
+```
+
+Sign up to use the [Spoonacular API](https://spoonacular.com/food-api).
+
+Save your API key in a file called secrets.sh using this format:
+
+```
+export YOURKEY="YOURKEYHERE"
+```
+
+In the same file called secrets.sh, designate any secret key to use the Flask app:
+
+```
+export FLASK_SECRET_KEY="YOURKEYHERE"
+```
+
+Source your keys from your secrets.sh file into your virtual environment:
+
+```
+source secrets.sh
+```
+
+Create database 'groceries'.
+```
+createdb groceries
+```
+Create your database tables
+```
+python model.py
+```
+
+
+Run the app:
+
+```
+python server.py
+```
+
+You can now navigate to 'localhost:5000/' to start exploring Aislander. Happy grocery listing!
 
 ## Future Features
 * Repeating ingredients will increment in measurement values rather than duplicating.
