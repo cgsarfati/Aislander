@@ -18,10 +18,12 @@ Aislander is intended to automate a task we all spend too much time on: manually
 * API: Spoonacular API
 
 ## Features
-* Users can create grocery lists, and access previously saved ones.
-* Users can also search for recipes, and append those recipes' ingredients into one grocery list with a single click of a button.
-* The grocery list is organized by aisle categories, saving users from scavenger hunting in grocery stores.
-* Users can also bookmark recipes, which can be accessed in their profile page, and create many grocery lists, intended for meal planning purposes.
+* Users can log in or register in the homepage, where the data is stored to the PostgreSQL database.
+* Once a user is logged in, it will lead to the dashboard page, where users can create grocery lists, and access previously saved ones.
+* Users can also search for recipes, where this app sends calls to the Spoonacular API to access recipe data.
+* If users want to append a recipe's ingredients into a grocery list, they can click the shopping cart button.
+* The grocery list is organized by aisle categories, saving users from scavenger hunting in grocery stores. Ingredients either append to existing aisles, or creating a new aisle in the process.
+* Lastly, users can bookmark recipes, which can be accessed in their profile page. The profile page includes user info as well as a carousel of the bookmarked recipes' images.
 
 ## Installation
 
