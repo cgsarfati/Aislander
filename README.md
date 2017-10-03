@@ -19,7 +19,7 @@ Aislander is intended to automate a task we all spend too much time on: manually
 
 ## Features
 ![Homepage](https://raw.githubusercontent.com/cgsarfati/hb-grocery-app/master/static/img/Login.gif)
-Users can log in or register in the homepage, where the data is stored to the PostgreSQL database. Registered users have a personalized dashboard only they have access to once logged in.
+Users can log in or register in the homepage, where the data is stored after password hashing to the PostgreSQL database. Registered users have a personalized dashboard only they have access to once logged in.
 
 ![Homepage](https://raw.githubusercontent.com/cgsarfati/hb-grocery-app/master/static/img/AddToggleList.gif)
 Once a user is logged in, it will lead to the dashboard page, where users can create grocery lists via AJAX POST requests, and access previously saved ones. There is also a progress bar on top, guiding new users via a step-by-step tutorial.
