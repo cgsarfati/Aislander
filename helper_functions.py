@@ -4,6 +4,9 @@
 from model import connect_to_db, db, User, Recipe, Ingredient, List, Cuisine
 from model import Aisle, RecipeIngredient, ListIngredient, Bookmark, RecipeCuisine
 
+# Password hashing library
+from passlib.apps import custom_app_context as pwd_context
+
 # Import file with all the Spoonacular API calls
 import api_calls
 
@@ -183,7 +186,10 @@ def add_recipe(recipe_id):
 def add_user(username, email, password):
     """Adds user to Users table in DB. Returns instantiated user object."""
 
-    new_user = User(username=username, email=email, password=password)
+    # Hash pw
+    hash = pwd_context.hash(password)
+
+    new_user = User(username=username, email=email, password=hash)
     db.session.add(new_user)
     db.session.commit()
 

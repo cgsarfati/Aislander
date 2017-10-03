@@ -6,6 +6,9 @@ from functools import wraps
 # Import web templating language
 from jinja2 import StrictUndefined
 
+# Password hashing library
+from passlib.apps import custom_app_context as pwd_context
+
 # Import Flask web framework
 from flask import Flask, render_template, request, flash, redirect, session, g
 from flask import url_for, jsonify
@@ -81,6 +84,10 @@ def validate_login_info():
     username = request.form["username"]
     password = request.form["password"]
 
+    # Hash pw
+    hash = pwd_context.hash(password)
+    verified = pwd_context.verify(password, hash)
+
     # Check if user in database
     existing_user = helper_functions.check_if_user_exists(username)
 
@@ -89,8 +96,9 @@ def validate_login_info():
         flash("{} does not exist!".format(username))
         return redirect("/")
     if existing_user.password != password:
-        flash("Incorrect password. Try again.")
-        return redirect("/")
+        if not verified:
+            flash("Incorrect password. Try again.")
+            return redirect("/")
 
     # If successful, add user to session and redirect to dashboard.
     session["user_id"] = existing_user.user_id
